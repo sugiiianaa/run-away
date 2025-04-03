@@ -1,0 +1,73 @@
+# Ignore Visual Studio user-specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore Rider files
+.idea/
+*.sln.iml
+
+# Ignore .NET Core and ASP.NET Core specific files
+appsettings.*.json
+secrets.json
+
+# Ignore logs and database
+logs/
+*.log
+
+# Ignore localdb and SQLite database files
+*.mdf
+*.ldf
+*.sqlite
+
+# Ignore migrations
+Migrations/
+
+# Ignore compiled dlls and executables
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.obj
+*.o
+*.so
+*.idb
+
+# Ignore NuGet packages and lock files
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+
+# Ignore Docker files
+**/[Dd]ocker*
+
+# Ignore generated files and temporary files
+*.bak
+*.swp
+*.swo
+*.tmp
+~$*
+
+# Ignore environment variables and config files
+.env
+.env.*
+
+# Ignore ReSharper and Rider specific files
+*.DotSettings.user
+
+# Ignore Coverage Reports
+coverage/
+*.coverage
+TestResults/
+
+# Ignore deployment files
+.publish/
+.Dockerfile
