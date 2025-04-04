@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RunAway.Domain.Commons;
+﻿using RunAway.Domain.Commons;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
 {
     public class AccommodationEntity : AuditableEntity<Guid>
     {
-        private readonly List<ImageUrl> _imageUrls = [];
+        private readonly List<string> _imageUrls = [];
         private readonly List<RoomEntity> _rooms = [];
 
         public string Name { get; private set; } = string.Empty;
         public string Address { get; private set; } = string.Empty;
         public Coordinate Coordinate { get; private set; } = default!;
 
-        public IReadOnlyCollection<ImageUrl> ImageUrls => _imageUrls.AsReadOnly();
+        public IReadOnlyCollection<string> ImageUrls => _imageUrls.AsReadOnly();
         public IReadOnlyCollection<RoomEntity> Rooms => _rooms.AsReadOnly();
 
         private AccommodationEntity() { } // For entity framework
@@ -27,7 +22,7 @@ namespace RunAway.Domain.Entities
             string name,
             string address,
             Coordinate coordinate,
-            List<ImageUrl> imageUrls,
+            List<string> imageUrls,
             List<RoomEntity> rooms) : base(id)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -49,7 +44,12 @@ namespace RunAway.Domain.Entities
             Name = name;
             Address = address;
             Coordinate = coordinate;
-            _imageUrls.AddRange(imageUrls);
+
+            foreach (var imageUrl in imageUrls)
+            {
+                AddImage(imageUrl);
+            }
+
             _rooms.AddRange(rooms);
         }
 
@@ -71,7 +71,7 @@ namespace RunAway.Domain.Entities
             SetUpdatedAt();
         }
 
-        public void AddImage(ImageUrl imageUrl)
+        public void AddImage(string imageUrl)
         {
             if (imageUrl == null)
                 throw new ArgumentNullException(nameof(imageUrl), "Image URL cannot be null.");
@@ -82,13 +82,13 @@ namespace RunAway.Domain.Entities
 
         public void AddRoom(RoomEntity room)
         {
-            if(room == null)
+            if (room == null)
                 throw new ArgumentNullException(nameof(room), "Room cannot be null.");
 
             if (_rooms.Any(r => r.Id == room.Id))
                 throw new InvalidOperationException("Room already exists in this accommodation.");
 
-            room.AssignToAccommodation(Id);
+            room.AssignToAccommodation(this);
 
             _rooms.Add(room);
             SetUpdatedAt();

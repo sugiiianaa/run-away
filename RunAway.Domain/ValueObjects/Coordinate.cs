@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RunAway.Domain.ValueObjects
+﻿namespace RunAway.Domain.ValueObjects
 {
     public sealed class Coordinate : IEquatable<Coordinate>
     {
         public decimal Latitude { get; }
         public decimal Longitude { get; }
+
+        private Coordinate() { }
 
         public Coordinate(decimal latitude, decimal longitude)
         {

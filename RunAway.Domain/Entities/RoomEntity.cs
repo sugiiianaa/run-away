@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RunAway.Domain.Commons;
+﻿using RunAway.Domain.Commons;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
@@ -29,7 +24,7 @@ namespace RunAway.Domain.Entities
             string name,
             string description,
             Money price,
-            List<string> facilities) : base(id) 
+            List<string> facilities) : base(id)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Room name cannot be empty.", nameof(name));
@@ -49,7 +44,7 @@ namespace RunAway.Domain.Entities
 
         public void AssignToAccommodation(AccommodationEntity accommodation)
         {
-            if(accommodation is null) 
+            if (accommodation is null)
                 throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null.");
 
             AccommodationId = accommodation.Id;

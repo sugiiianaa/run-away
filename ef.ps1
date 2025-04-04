@@ -1,0 +1,1 @@
+dotnet ef $args --project ./RunAway.Infrastructure --startup-project ./RunAway.API
