@@ -2,12 +2,12 @@
 {
     public sealed class Coordinate : IEquatable<Coordinate>
     {
-        public decimal Latitude { get; }
-        public decimal Longitude { get; }
+        public double Latitude { get; }
+        public double Longitude { get; }
 
         private Coordinate() { }
 
-        public Coordinate(decimal latitude, decimal longitude)
+        public Coordinate(double latitude, double longitude)
         {
             if (latitude < -90 || latitude > 90)
                 throw new ArgumentOutOfRangeException(nameof(latitude), "Latitude must be between -90 and 90.");

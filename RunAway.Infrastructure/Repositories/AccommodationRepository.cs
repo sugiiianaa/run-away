@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RunAway.Application.IRepositories;
 using RunAway.Domain.Entities;
-using RunAway.Domain.IRepositories;
 using RunAway.Infrastructure.Persistence;
 
 namespace RunAway.Infrastructure.Repositories
@@ -17,30 +17,35 @@ namespace RunAway.Infrastructure.Repositories
         public async Task AddAsync(AccommodationEntity entity)
         {
             await _context.Accommodations.AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var entity = await _context.Accommodations.FindAsync(id);
-            if (entity != null)
+            var accommodation = await _context.Accommodations.FindAsync(id);
+            if (accommodation != null)
             {
-                _context.Accommodations.Remove(entity);
-                await _context.SaveChangesAsync();
+                _context.Accommodations.Remove(accommodation);
             }
         }
 
-        public async Task<AccommodationEntity?> GetByIdAsync(Guid id)
+        public async Task<AccommodationEntity> GetByIdAsync(Guid id)
+        {
+            return await _context.Accommodations
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<AccommodationEntity> GetByIdWithRoomsAsync(Guid id)
         {
             return await _context.Accommodations
                 .Include(a => a.Rooms)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task UpdateAsync(AccommodationEntity entity)
+        public Task UpdateAsync(AccommodationEntity entity)
         {
-            _context.Accommodations.Update(entity);
-            await _context.SaveChangesAsync();
+            // EF Core automatically tracks changes to the entity
+            _context.Entry(entity).State = EntityState.Modified;
+            return Task.CompletedTask;
         }
     }
 }

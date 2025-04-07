@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RunAway.Application\RunAway.Application.csproj" />
     <ProjectReference Include="..\RunAway.Domain\RunAway.Domain.csproj" />
   </ItemGroup>
 

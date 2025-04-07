@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using RunAway.Domain.Commons;
 using RunAway.Domain.Entities;
 
 
@@ -16,42 +17,74 @@ namespace RunAway.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configure Accommodation entity
             modelBuilder.Entity<AccommodationEntity>(entity =>
             {
-                entity.OwnsOne(a => a.Coordinate, coord =>
+                entity.ToTable("Accommodations");
+                entity.HasKey(e => e.Id);
+
+                // Configure Coordinate value object
+                entity.OwnsOne(e => e.Coordinate, coordinate =>
                 {
-                    coord.Property(c => c.Latitude).HasColumnName("Latitude");
-                    coord.Property(c => c.Longitude).HasColumnName("Longitude");
+                    coordinate.Property(c => c.Latitude).HasColumnName("Latitude");
+                    coordinate.Property(c => c.Longitude).HasColumnName("Longitude");
                 });
 
-                entity
-                    .Property<List<string>>("_imageUrls")
-                    .HasColumnName("ImageUrls")
+                // Configure collection of image URLs
+                entity.Property(e => e.ImageUrls)
                     .HasConversion(
-                        v => string.Join(';', v),
-                        v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
-                    )
-                    .Metadata.SetValueComparer(
-                        new ValueComparer<List<string>>(
-                            (c1, c2) => c1.SequenceEqual(c2),
-                            c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                            c => c.ToList()
-                        ));
+                        v => string.Join(',', v),
+                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+            });
 
-                entity.HasMany(a => a.Rooms)
-                    .WithOne(r => r.Accommodation)
+            // Configure Room entity
+            modelBuilder.Entity<RoomEntity>(entity =>
+            {
+                entity.ToTable("Rooms");
+                entity.HasKey(e => e.Id);
+
+                // Configure Money value object
+                entity.OwnsOne(e => e.Price, price =>
+                {
+                    price.Property(p => p.Amount).HasColumnName("Price");
+                    price.Property(p => p.Currency).HasColumnName("Currency");
+                });
+
+                // Configure collection of facilities
+                entity.Property(e => e.Facilities)
+                    .HasConversion(
+                        v => string.Join(',', v),
+                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+
+                // Configure relationship with Accommodation
+                entity.HasOne<AccommodationEntity>()
+                    .WithMany(a => a.Rooms)
                     .HasForeignKey(r => r.AccommodationId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+        }
 
-            modelBuilder.Entity<RoomEntity>(entity =>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            // Apply audit information before saving
+            foreach (var entry in ChangeTracker.Entries())
             {
-                entity.OwnsOne(r => r.Price, money =>
+                if (entry.Entity is AuditableEntity<Guid> auditableEntity)
                 {
-                    money.Property(m => m.Amount).HasColumnName("Amount");
-                    money.Property(m => m.Currency).HasColumnName("Currency");
-                });
-            });
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            // Your AuditableEntity already sets CreatedAt in constructor
+                            break;
+                        case EntityState.Modified:
+                            // Use your existing method
+                            auditableEntity.SetUpdatedAt();
+                            break;
+                    }
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }
