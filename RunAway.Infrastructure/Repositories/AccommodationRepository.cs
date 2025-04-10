@@ -31,6 +31,7 @@ namespace RunAway.Infrastructure.Repositories
         public async Task<AccommodationEntity> GetByIdAsync(Guid id)
         {
             return await _context.Accommodations
+                .Include(a => a.Rooms)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

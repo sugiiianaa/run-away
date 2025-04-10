@@ -23,6 +23,15 @@ namespace RunAway.Infrastructure.Persistence
                 entity.ToTable("Accommodations");
                 entity.HasKey(e => e.Id);
 
+                // Don't ignore — instead configure the backing field
+                entity.HasMany(e => e.Rooms)
+                    .WithOne(r => r.Accommodation)
+                    .HasForeignKey(r => r.AccommodationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Tell EF to use the private field for the navigation
+                entity.Navigation(e => e.Rooms).UsePropertyAccessMode(PropertyAccessMode.Field);
+
                 // Configure Coordinate value object
                 entity.OwnsOne(e => e.Coordinate, coordinate =>
                 {
@@ -55,12 +64,6 @@ namespace RunAway.Infrastructure.Persistence
                     .HasConversion(
                         v => string.Join(',', v),
                         v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
-
-                // Configure relationship with Accommodation
-                entity.HasOne<AccommodationEntity>()
-                    .WithMany(a => a.Rooms)
-                    .HasForeignKey(r => r.AccommodationId)
-                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

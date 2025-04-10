@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using RunAway.Application.IRepositories;
 using RunAway.Domain.Commons;
 using RunAway.Domain.Entities;
-using RunAway.Domain.Events;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Application.Features.Accommodations.Commands.AddRoom
@@ -17,18 +17,20 @@ namespace RunAway.Application.Features.Accommodations.Commands.AddRoom
         public List<string> Facilities { get; set; } = [];
     }
 
+
     public class AddRoomCommandHandler : IRequestHandler<AddRoomCommand, Guid>
     {
         private readonly IAccommodationRepository _accommodationRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDomainEventService _domainEventService;
+        private readonly ILogger<AddRoomCommandHandler> _logger;
+        private readonly IRoomRepository _roomRepository;
 
-
-        public AddRoomCommandHandler(IAccommodationRepository accommodationRepository, IUnitOfWork unitOfWork, IDomainEventService domainEventService)
+        public AddRoomCommandHandler(IAccommodationRepository accommodationRepository, IUnitOfWork unitOfWork, ILogger<AddRoomCommandHandler> logger, IRoomRepository roomRepository)
         {
             _accommodationRepository = accommodationRepository;
             _unitOfWork = unitOfWork;
-            _domainEventService = domainEventService;
+            _logger = logger;
+            _roomRepository = roomRepository;
         }
 
         public async Task<Guid> Handle(AddRoomCommand request, CancellationToken cancellationToken)
@@ -47,11 +49,14 @@ namespace RunAway.Application.Features.Accommodations.Commands.AddRoom
 
             accommodation.AddRoom(room);
 
+            await _roomRepository.AddAsync(room);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _domainEventService.PublishAsync(new RoomAddedToAccommodationEvent(accommodation, room));
+            _logger.LogInformation("Room {RoomId} added successfully", room.Id);
 
             return room.Id;
         }
+
     }
 }

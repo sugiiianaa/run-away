@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using RunAway.Application.IRepositories;
 using RunAway.Domain.Commons;
 using RunAway.Domain.Entities;
-using RunAway.Domain.Events;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodations
@@ -26,17 +26,17 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
         public List<string> Facilities { get; set; } = new();
     }
 
-    public class CreateAccommodationCommandHandler
+    public class CreateAccommodationCommandHandler : IRequestHandler<CreateAccommodationCommand, Guid>
     {
         private readonly IAccommodationRepository _accommodationRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDomainEventService _domainEventService;
+        private readonly ILogger<CreateAccommodationCommandHandler> _logger;
 
-        public CreateAccommodationCommandHandler(IAccommodationRepository accommodationRepository, IUnitOfWork unitOfWork, IDomainEventService domainEventService)
+        public CreateAccommodationCommandHandler(IAccommodationRepository accommodationRepository, IUnitOfWork unitOfWork, ILogger<CreateAccommodationCommandHandler> logger)
         {
             _accommodationRepository = accommodationRepository;
             _unitOfWork = unitOfWork;
-            _domainEventService = domainEventService;
+            _logger = logger;
         }
 
         public async Task<Guid> Handle(CreateAccommodationCommand request, CancellationToken cancellationToken)
@@ -62,7 +62,7 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
             await _accommodationRepository.AddAsync(accommodation);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _domainEventService.PublishAsync(new AccommodationCreatedEvent(accommodation));
+            _logger.LogInformation("Accommodation {AccommodationId} created successfully", accommodation.Id);
 
             return accommodation.Id;
         }

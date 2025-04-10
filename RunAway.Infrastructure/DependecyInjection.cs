@@ -5,6 +5,7 @@ using RunAway.Application.IRepositories;
 using RunAway.Domain.Commons;
 using RunAway.Infrastructure.Persistence;
 using RunAway.Infrastructure.Repositories;
+using RunAway.Infrastructure.Services;
 
 namespace RunAway.Infrastructure
 {
@@ -20,8 +21,10 @@ namespace RunAway.Infrastructure
                     x => x.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDomainEventService, DomainEventService>();
 
             services.AddScoped<IAccommodationRepository, AccommodationRepository>();
+            services.AddScoped<IRoomRepository, RoomRepository>();
 
             return services;
         }

@@ -1,7 +1,9 @@
-﻿namespace RunAway.Domain.Commons
+﻿using MediatR;
+
+namespace RunAway.Domain.Commons
 {
-    public interface IDomainEvent
+    public interface IDomainEvent : INotification
     {
-        // Marker interface for domain events
+        DateTime OccurredOn { get; }
     }
 }

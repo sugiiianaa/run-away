@@ -2,6 +2,6 @@
 {
     public interface IDomainEventService
     {
-        Task PublishAsync(IDomainEvent domainEvent);
+        public Task PublishAsync(IDomainEvent domainEvent);
     }
 }
