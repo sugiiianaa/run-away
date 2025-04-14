@@ -25,6 +25,7 @@ namespace RunAway.Infrastructure
 
             services.AddScoped<IAccommodationRepository, AccommodationRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }

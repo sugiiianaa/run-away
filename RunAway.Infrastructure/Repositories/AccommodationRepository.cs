@@ -28,14 +28,14 @@ namespace RunAway.Infrastructure.Repositories
             }
         }
 
-        public async Task<AccommodationEntity> GetByIdAsync(Guid id)
+        public async Task<AccommodationEntity?> GetByIdAsync(Guid id)
         {
             return await _context.Accommodations
                 .Include(a => a.Rooms)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<AccommodationEntity> GetByIdWithRoomsAsync(Guid id)
+        public async Task<AccommodationEntity?> GetByIdWithRoomsAsync(Guid id)
         {
             return await _context.Accommodations
                 .Include(a => a.Rooms)

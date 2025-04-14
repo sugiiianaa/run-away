@@ -12,6 +12,7 @@ namespace RunAway.Infrastructure.Persistence
 
         public DbSet<AccommodationEntity> Accommodations { get; set; } = null!;
         public DbSet<RoomEntity> Rooms { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,6 +65,23 @@ namespace RunAway.Infrastructure.Persistence
                     .HasConversion(
                         v => string.Join(',', v),
                         v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+            });
+
+            modelBuilder.Entity<UserEntity>(entity =>
+            {
+                entity.ToTable("Users");
+                entity.HasKey(e => e.Id);
+
+                // Configure the Email value object
+                entity.OwnsOne(e => e.Email, email =>
+                {
+                    email.Property(e => e.Value)
+                         .HasColumnName("EmailAddress")
+                         .HasMaxLength(320);
+
+                    email.HasIndex(e => e.Value).IsUnique();
+                });
+
             });
         }
 
