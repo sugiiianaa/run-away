@@ -80,8 +80,11 @@ namespace RunAway.Infrastructure.Persistence
                          .HasMaxLength(320);
 
                     email.HasIndex(e => e.Value).IsUnique();
-                });
 
+                    // Tell EF Core about the shadow property (foreign key)
+                    email.WithOwner()
+                         .HasForeignKey("UserEntityId");
+                });
             });
         }
 

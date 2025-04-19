@@ -31,7 +31,7 @@ namespace RunAway.Infrastructure.Repositories
 
         public async Task<UserEntity?> GetByEmailAsync(Email email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Value == email.Value);
         }
 
         public async Task<UserEntity?> GetByIdAsync(Guid id)

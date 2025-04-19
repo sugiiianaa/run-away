@@ -6,7 +6,7 @@ namespace RunAway.Application.Features.Users.Commands.CreateUser
     {
         public CreateUserCommandValidator()
         {
-            RuleFor(u => u.Email.Value)
+            RuleFor(u => u.Email)
                 .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("Invalid email format.");
 
