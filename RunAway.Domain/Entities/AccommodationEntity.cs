@@ -1,21 +1,44 @@
-﻿using RunAway.Domain.Commons;
+﻿using System.ComponentModel.DataAnnotations;
+using RunAway.Domain.Commons;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
 {
+    /// <summary>
+    /// Represents an acommodation in the system.
+    /// Required properties: Name, Address, Coordinate, ImageUrls, Rooms
+    /// </summary>
     public class AccommodationEntity : AuditableEntity<Guid>
     {
+        #region Properties
+
+        [Required]
+        public string Name { get; private set; }
+
+        [Required]
+        public string Address { get; private set; }
+
+        [Required]
+        public Coordinate Coordinate { get; private set; }
+
+        #endregion
+
+        #region Collection Properties
+
         private readonly List<string> _imageUrls = [];
         private readonly List<RoomEntity> _rooms = [];
 
-        public string Name { get; private set; } = string.Empty;
-        public string Address { get; private set; } = string.Empty;
-        public Coordinate Coordinate { get; private set; } = default!;
-
+        [Required]
         public IReadOnlyCollection<string> ImageUrls => _imageUrls.AsReadOnly();
+
+        [Required]
         public IReadOnlyCollection<RoomEntity> Rooms => _rooms.AsReadOnly();
 
-        private AccommodationEntity() { } // For entity framework
+        #endregion
+
+        #region Constructor
+
+        private AccommodationEntity() { }
 
         public AccommodationEntity(
             Guid id,
@@ -52,6 +75,10 @@ namespace RunAway.Domain.Entities
 
             _rooms.AddRange(rooms);
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void UpdateName(string newName)
         {
@@ -104,5 +131,6 @@ namespace RunAway.Domain.Entities
             }
         }
 
+        #endregion
     }
 }

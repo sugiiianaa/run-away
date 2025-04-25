@@ -3,19 +3,33 @@ using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
 {
+    /// <summary>
+    /// Represents a accommodation's room in the system.
+    /// Required properties: Name, Price, Facilities, AccommodationId
+    /// </summary>
     public class RoomEntity : AuditableEntity<Guid>
     {
+        #region Properties
+
+        public string Name { get; private set; }
+        public string? Description { get; private set; }
+        public Money Price { get; private set; }
+        public Guid AccommodationId { get; private set; }
+
+        #endregion
+
+        #region Collection Properties
+
         private readonly List<string> _facilities = [];
-
-        public string Name { get; private set; } = string.Empty;
-        public string Description { get; private set; } = string.Empty;
-        public Money Price { get; private set; } = default!;
-
         public IReadOnlyCollection<string> Facilities => _facilities.AsReadOnly();
 
-        // Foreign key to enforce one-to-many relationship
-        public Guid AccommodationId { get; private set; }
-        public AccommodationEntity Accommodation { get; private set; } = default!;
+        #endregion
+
+        #region Navigation Properties
+
+        public AccommodationEntity Accommodation { get; private set; }
+
+        #endregion
 
         private RoomEntity() { } // For Entity Framework
 
@@ -24,7 +38,8 @@ namespace RunAway.Domain.Entities
             string name,
             string description,
             Money price,
-            List<string> facilities) : base(id)
+            List<string> facilities,
+            Guid accommodationId) : base(id)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Room name cannot be empty.", nameof(name));
@@ -39,6 +54,7 @@ namespace RunAway.Domain.Entities
             Name = name;
             Description = description;
             Price = price;
+            AccommodationId = accommodationId;
             _facilities.AddRange(facilities);
         }
 
