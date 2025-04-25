@@ -3,11 +3,26 @@ using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
 {
+    /// <summary>
+    /// Represents an user in the system.
+    /// Required propertiesL: Email, Password, Name
+    /// </summary>
     public class UserEntity : AuditableEntity<Guid>
     {
+        #region Properties
+
         public Email Email { get; private set; }
         public string Password { get; private set; }
         public string Name { get; private set; }
+
+        #endregion
+
+        #region Collection Properties
+
+        private readonly List<TransactionRecordEntity> _transactions = [];
+        public IReadOnlyCollection<TransactionRecordEntity> Transactions => _transactions.AsReadOnly();
+
+        #endregion
 
         private UserEntity() { } // For entity framework
 

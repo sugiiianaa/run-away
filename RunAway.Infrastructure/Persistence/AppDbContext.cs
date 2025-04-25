@@ -13,6 +13,7 @@ namespace RunAway.Infrastructure.Persistence
         public DbSet<AccommodationEntity> Accommodations { get; set; } = null!;
         public DbSet<RoomEntity> Rooms { get; set; } = null!;
         public DbSet<UserEntity> Users { get; set; } = null!;
+        public DbSet<TransactionRecordEntity> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,10 +22,18 @@ namespace RunAway.Infrastructure.Persistence
             // Configure Accommodation entity
             modelBuilder.Entity<AccommodationEntity>(entity =>
             {
-                entity.ToTable("Accommodations");
-                entity.HasKey(e => e.Id);
+                entity.ToTable("accommodations");
+                entity.HasKey(e => e.Id).HasName("pk_accommodations");
 
-                // Don't ignore — instead configure the backing field
+                // Property column name configuration
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.Address).HasColumnName("address");
+                entity.Property(e => e.ImageUrls).HasColumnName("image_urls");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
+
+                // Room relationship configuration
                 entity.HasMany(e => e.Rooms)
                     .WithOne(r => r.Accommodation)
                     .HasForeignKey(r => r.AccommodationId)
@@ -36,8 +45,8 @@ namespace RunAway.Infrastructure.Persistence
                 // Configure Coordinate value object
                 entity.OwnsOne(e => e.Coordinate, coordinate =>
                 {
-                    coordinate.Property(c => c.Latitude).HasColumnName("Latitude");
-                    coordinate.Property(c => c.Longitude).HasColumnName("Longitude");
+                    coordinate.Property(c => c.Latitude).HasColumnName("latitude");
+                    coordinate.Property(c => c.Longitude).HasColumnName("longitude");
                 });
 
                 // Configure collection of image URLs
@@ -50,41 +59,106 @@ namespace RunAway.Infrastructure.Persistence
             // Configure Room entity
             modelBuilder.Entity<RoomEntity>(entity =>
             {
-                entity.ToTable("Rooms");
-                entity.HasKey(e => e.Id);
+                entity.ToTable("rooms");
+                entity.HasKey(e => e.Id).HasName("pk_rooms");
+
+                // Property column name configuration
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.Description).HasColumnName("description");
+                entity.Property(e => e.AccommodationId).HasColumnName("accommodation_id");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
 
                 // Configure Money value object
                 entity.OwnsOne(e => e.Price, price =>
                 {
-                    price.Property(p => p.Amount).HasColumnName("Price");
-                    price.Property(p => p.Currency).HasColumnName("Currency");
+                    price.Property(p => p.Amount).HasColumnName("price");
+                    price.Property(p => p.Currency).HasColumnName("currency");
                 });
 
                 // Configure collection of facilities
                 entity.Property(e => e.Facilities)
                     .HasConversion(
                         v => string.Join(',', v),
-                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList())
+                    .HasColumnName("facilities");
             });
 
+            // Configure User entity
             modelBuilder.Entity<UserEntity>(entity =>
             {
-                entity.ToTable("Users");
-                entity.HasKey(e => e.Id);
+                entity.ToTable("users");
+                entity.HasKey(e => e.Id).HasName("pk_users");
+
+                // Property column name configuration
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.Password).HasColumnName("password");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
 
                 // Configure the Email value object
                 entity.OwnsOne(e => e.Email, email =>
                 {
                     email.Property(e => e.Value)
-                         .HasColumnName("EmailAddress")
+                         .HasColumnName("email_address")
                          .HasMaxLength(320);
 
                     email.HasIndex(e => e.Value).IsUnique();
 
                     // Tell EF Core about the shadow property (foreign key)
                     email.WithOwner()
-                         .HasForeignKey("UserEntityId");
+                         .HasForeignKey("user_id");
                 });
+
+                // Configure the Transaction Entity 
+                entity.HasMany(u => u.Transactions)
+                  .WithOne(t => t.User)
+                  .HasForeignKey(t => t.UserID)
+                  .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure Transaction entity
+            modelBuilder.Entity<TransactionRecordEntity>(entity =>
+            {
+                entity.ToTable("transaction_records");
+                entity.HasKey(e => e.Id).HasName("pk_transactions_records");
+
+                // Property column name configuration
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.RoomID).HasColumnName("room_id");
+                entity.Property(e => e.UserID).HasColumnName("user_id");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
+                entity.Property(e => e.TransactionStatus).HasColumnName("transaction_status");
+
+                entity.OwnsOne(e => e.Amount, money =>
+                {
+                    money.Property(m => m.Amount).HasColumnName("amount");
+                    money.Property(m => m.Currency).HasColumnName("currency");
+                });
+
+                entity.HasOne(t => t.Room)
+                    .WithMany()
+                    .HasForeignKey(t => t.RoomID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.OwnsMany(p => p.Guests, a =>
+                 {
+                     a.ToTable("transaction_guests");
+                     a.WithOwner().HasForeignKey("transaction_record_id");
+
+                     // Define the shadow property for the primary key
+                     a.Property<int>("id").ValueGeneratedOnAdd().HasColumnName("id");
+
+                     // Set it as the key
+                     a.HasKey("id").HasName("pk_transaction_guests");
+
+                     // Property column name configuration
+                     a.Property(e => e.Type).HasColumnName("type");
+                     a.Property(e => e.Number).HasColumnName("number");
+                 });
             });
         }
 

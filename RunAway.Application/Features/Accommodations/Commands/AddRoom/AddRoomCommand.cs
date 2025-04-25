@@ -45,7 +45,8 @@ namespace RunAway.Application.Features.Accommodations.Commands.AddRoom
                 request.Name,
                 request.Description,
                 new Money(request.Price, request.Currency),
-                request.Facilities);
+                request.Facilities,
+                request.AccommodationId);
 
             accommodation.AddRoom(room);
 
