@@ -86,6 +86,9 @@ namespace RunAway.Domain.Entities
             if (accommodation is null)
                 throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null.");
 
+            if (Accommodation is not null)
+                throw new InvalidOperationException("Cannot assign room to a different accommodation as it is already assigned to an accommodation.");
+
             AccommodationId = accommodation.Id;
             Accommodation = accommodation;
             SetUpdatedAt();

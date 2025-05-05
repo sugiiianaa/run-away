@@ -43,7 +43,6 @@ namespace RunAway.Domain.Entities
         {
         }
 
-
         public static AccommodationEntity Create(
              Guid id,
              string name,
