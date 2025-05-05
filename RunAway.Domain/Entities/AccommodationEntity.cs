@@ -38,16 +38,21 @@ namespace RunAway.Domain.Entities
 
         #region Constructor
 
-        private AccommodationEntity() { }
-
-        public AccommodationEntity(
-            Guid id,
-            string name,
-            string address,
-            Coordinate coordinate,
-            List<string> imageUrls,
-            List<RoomEntity> rooms) : base(id)
+        // Private parameterless constructor for EF Core
+        private AccommodationEntity() : base(Guid.Empty)
         {
+        }
+
+
+        public static AccommodationEntity Create(
+             Guid id,
+             string name,
+             string address,
+             Coordinate coordinate,
+             List<string> imageUrls,
+             List<RoomEntity> rooms)
+        {
+            // Validate
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Accommodation name cannot be empty.", nameof(name));
 
@@ -63,17 +68,27 @@ namespace RunAway.Domain.Entities
             if (rooms == null || rooms.Count == 0)
                 throw new ArgumentException("At least one room is required.", nameof(rooms));
 
-            Id = id;
-            Name = name;
-            Address = address;
-            Coordinate = coordinate;
+            var entity = new AccommodationEntity
+            {
+                Id = id,
+                Name = name,
+                Address = address,
+                Coordinate = coordinate
+            };
 
+            // Add images and rooms
             foreach (var imageUrl in imageUrls)
             {
-                AddImage(imageUrl);
+                entity._imageUrls.Add(imageUrl);
             }
 
-            _rooms.AddRange(rooms);
+            foreach (var room in rooms)
+            {
+                room.AssignToAccommodation(entity);
+                entity._rooms.Add(room);
+            }
+
+            return entity;
         }
 
         #endregion
@@ -116,7 +131,6 @@ namespace RunAway.Domain.Entities
                 throw new InvalidOperationException("Room already exists in this accommodation.");
 
             room.AssignToAccommodation(this);
-
             _rooms.Add(room);
             SetUpdatedAt();
         }
