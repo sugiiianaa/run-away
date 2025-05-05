@@ -41,19 +41,17 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
 
         public async Task<Guid> Handle(CreateAccommodationCommand request, CancellationToken cancellationToken)
         {
-            var accommodationId = Guid.NewGuid();
-            var rooms = request.Rooms.Select(r => new RoomEntity(
+            var rooms = request.Rooms.Select(r => RoomEntity.Create(
                 Guid.NewGuid(),
                 r.Name,
                 r.Description,
                 new Money(r.Price, r.Currency),
-                r.Facilities,
-                accommodationId)).ToList();
+                r.Facilities)).ToList();
 
             var coordinate = new Coordinate(request.Latitude, request.Longitude);
 
-            var accommodation = new AccommodationEntity(
-                accommodationId,
+            var accommodation = AccommodationEntity.Create(
+                Guid.NewGuid(),
                 request.Name,
                 request.Address,
                 coordinate,

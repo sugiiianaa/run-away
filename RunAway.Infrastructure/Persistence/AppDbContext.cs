@@ -13,7 +13,8 @@ namespace RunAway.Infrastructure.Persistence
         public DbSet<AccommodationEntity> Accommodations { get; set; } = null!;
         public DbSet<RoomEntity> Rooms { get; set; } = null!;
         public DbSet<UserEntity> Users { get; set; } = null!;
-        public DbSet<TransactionRecordEntity> Transactions { get; set; }
+        public DbSet<RoomAvailableRecordEntity> RoomAvailableRecords { get; set; } = null!;
+        public DbSet<TransactionRecordEntity> Transactions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -158,7 +159,39 @@ namespace RunAway.Infrastructure.Persistence
                      // Property column name configuration
                      a.Property(e => e.Type).HasColumnName("type");
                      a.Property(e => e.Number).HasColumnName("number");
+                     entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                     entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
                  });
+            });
+
+            // Configure Room Available entity
+            modelBuilder.Entity<RoomAvailableRecordEntity>(entity =>
+            {
+                entity.ToTable("room_available_records");
+                entity.HasKey(e => e.Id).HasName("pk_room_available_records");
+
+                // Property column name configuration
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.RoomId).HasColumnName("room_id");
+                entity.Property(e => e.AvailableRooms).HasColumnName("available_rooms");
+                entity.Property(e => e.Date).HasColumnName("date");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
+
+                entity.Property(e => e.Date)
+                .HasConversion(
+                    dateOnly => dateOnly.ToDateTime(TimeOnly.MinValue),
+                    dateTime => DateOnly.FromDateTime(dateTime)
+                );
+
+                entity.HasIndex(a => new { a.RoomId, a.Date })
+                    .IsUnique();
+
+                entity.HasOne(a => a.Room)
+                 .WithMany(r => r.RoomAvailabilityRecords)
+                 .HasForeignKey(a => a.RoomId)
+                 .IsRequired()
+                 .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

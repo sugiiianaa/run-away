@@ -41,9 +41,7 @@ namespace RunAway.Domain.Entities
 
         #endregion
 
-#pragma warning disable CS8618
         private TransactionRecordEntity() { }
-#pragma warning restore CS8618
 
         public TransactionRecordEntity(
             Guid id,

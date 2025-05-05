@@ -10,15 +10,8 @@ namespace RunAway.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public UsersController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [HttpPost("register")]
         [ProducesResponseType<ApiResponse<UserIdDto>>(StatusCodes.Status201Created)]
         public async Task<ActionResult<ApiResponse<UserIdDto>>> Create([FromBody] RegisterUserDto request)
@@ -30,7 +23,7 @@ namespace RunAway.API.Controllers
                 Name = request.Name,
             };
 
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(command);
 
             return result.ToApiResponse(201, "User created successfully");
         }
@@ -45,7 +38,7 @@ namespace RunAway.API.Controllers
                 Password = request.Password,
             };
 
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(command);
 
             return result.ToApiResponse(200);
         }

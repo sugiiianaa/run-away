@@ -40,13 +40,12 @@ namespace RunAway.Application.Features.Accommodations.Commands.AddRoom
             if (accommodation == null)
                 throw new Exception();
 
-            var room = new RoomEntity(
+            var room = RoomEntity.Create(
                 Guid.NewGuid(),
                 request.Name,
                 request.Description,
                 new Money(request.Price, request.Currency),
-                request.Facilities,
-                request.AccommodationId);
+                request.Facilities);
 
             accommodation.AddRoom(room);
 
