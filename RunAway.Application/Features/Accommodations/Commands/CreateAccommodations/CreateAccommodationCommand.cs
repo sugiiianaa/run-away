@@ -46,7 +46,8 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
                 r.Name,
                 r.Description,
                 new Money(r.Price, r.Currency),
-                r.Facilities)).ToList();
+                r.Facilities,
+                accommodationId)).ToList();
 
             var coordinate = new Coordinate(request.Latitude, request.Longitude);
 

@@ -64,7 +64,6 @@ namespace RunAway.Domain.Entities
             if (facilities == null || facilities.Count == 0)
                 throw new ArgumentException("At least one of facility is required.", nameof(facilities));
 
-
             var entity = new RoomEntity
             {
 
