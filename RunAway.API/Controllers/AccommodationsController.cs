@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RunAway.Application.Features.Accommodations.Commands.AddRoom;
 using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
@@ -18,6 +19,7 @@ namespace RunAway.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateAccommodationCommand command)
         {
             var accommodationId = await _mediator.Send(command);

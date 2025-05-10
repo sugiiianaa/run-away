@@ -1,4 +1,5 @@
 ﻿using RunAway.Domain.Commons;
+using RunAway.Domain.Enums;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Domain.Entities
@@ -14,6 +15,7 @@ namespace RunAway.Domain.Entities
         public Email Email { get; private set; }
         public string Password { get; private set; }
         public string Name { get; private set; }
+        public UserRoles Role { get; private set; }
 
         #endregion
 
@@ -30,7 +32,8 @@ namespace RunAway.Domain.Entities
             Guid id,
             Email email,
             string password,
-            string name) : base(id)
+            string name,
+            UserRoles role) : base(id)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentNullException("Password cannot be empty.", nameof(password));
@@ -48,6 +51,12 @@ namespace RunAway.Domain.Entities
             Email = email;
             Password = password;
             Name = name;
+            Role = role;
+        }
+
+        public void UpdateRoles(UserRoles role)
+        {
+            Role = role;
         }
 
         public void UpdatePassword(string newPassword)

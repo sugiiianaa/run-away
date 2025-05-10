@@ -39,8 +39,7 @@ namespace RunAway.Application.Features.Users.Queries.LoginUser
                 throw new ArgumentException("Email or password are invalid");
             }
 
-            var tokenData = _authService.GenerateToken(user.Id, user.Email);
-
+            var tokenData = _authService.GenerateToken(user.Id, user.Email, user.Role);
             return AuthMapper.ToTokenDto(tokenData.token, tokenData.expiresAt);
 
         }

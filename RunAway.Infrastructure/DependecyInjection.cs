@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RunAway.Application.IRepositories;
+using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
+using RunAway.Infrastructure.Extensions;
 using RunAway.Infrastructure.Persistence;
 using RunAway.Infrastructure.Repositories;
 using RunAway.Infrastructure.Services;
@@ -23,9 +25,16 @@ namespace RunAway.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IDomainEventService, DomainEventService>();
 
+            services.AddJwtAuthentication();
+
+            // Repositories
             services.AddScoped<IAccommodationRepository, AccommodationRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+
+            // Services
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IPasswordService, PasswordService>();
 
             return services;
         }

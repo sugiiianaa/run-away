@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RunAway.API.Helpers;
 using RunAway.Application.Dtos;
@@ -13,6 +14,7 @@ namespace RunAway.API.Controllers
     public class UsersController(IMediator mediator) : ControllerBase
     {
         [HttpPost("register")]
+        [AllowAnonymous]
         [ProducesResponseType<ApiResponse<UserIdDto>>(StatusCodes.Status201Created)]
         public async Task<ActionResult<ApiResponse<UserIdDto>>> Create([FromBody] RegisterUserDto request)
         {

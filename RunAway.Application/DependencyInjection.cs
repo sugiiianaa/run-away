@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using RunAway.Application.IServices;
-using RunAway.Application.Services;
 
 namespace RunAway.Application
 {
@@ -18,10 +16,6 @@ namespace RunAway.Application
             });
 
             services.AddAutoMapper(assembly);
-
-            // Services
-            services.AddScoped<IPasswordService, PasswordService>();
-            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }

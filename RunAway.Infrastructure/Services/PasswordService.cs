@@ -1,13 +1,13 @@
 ﻿using RunAway.Application.IServices;
 
-namespace RunAway.Application.Services
+namespace RunAway.Infrastructure.Services
 {
     public class PasswordService : IPasswordService
     {
         // Higher defaultWorkFactor -> more secure -> slower
         private const int DefaultWorkFactor = 12;
 
-        public string HashPassword(string password, int workFactor = DefaultWorkFactor)
+        public string HashPassword(string password, int workFactor = 12)
         {
             if (string.IsNullOrEmpty(password))
                 throw new ArgumentNullException(nameof(password), "Password cannot be null or empty");
