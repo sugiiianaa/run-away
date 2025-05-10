@@ -16,15 +16,8 @@ namespace RunAway.API.Controllers
         [HttpPost("register")]
         [AllowAnonymous]
         [ProducesResponseType<ApiResponse<UserIdDto>>(StatusCodes.Status201Created)]
-        public async Task<ActionResult<ApiResponse<UserIdDto>>> Create([FromBody] RegisterUserDto request)
+        public async Task<ActionResult<ApiResponse<UserIdDto>>> Create([FromBody] CreateUserCommand command)
         {
-            var command = new CreateUserCommand
-            {
-                Email = new Email(request.Email),
-                Password = request.Password,
-                Name = request.Name,
-            };
-
             var result = await mediator.Send(command);
 
             return result.ToApiResponse(201, "User created successfully");

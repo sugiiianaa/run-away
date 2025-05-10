@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using RunAway.Application.Features.Accommodations.Commands.AddRoom;
 using RunAway.Application.Features.Accommodations.Queries.GetAccommodationDetails;
 using RunAway.Domain.Entities;
 
@@ -17,9 +16,6 @@ namespace RunAway.Application.Commons.Mappings
                 .ForMember(d => d.Price, opt => opt.MapFrom(s => s.Price.Amount))
                 .ForMember(d => d.Currency, opt => opt.MapFrom(s => s.Price.Currency));
 
-            CreateMap<AddRoomCommand, RoomEntity>()
-              .ForMember(dest => dest.Price, opt =>
-                  opt.MapFrom(src => new Domain.ValueObjects.Money(src.Price, src.Currency)));
         }
     }
 }

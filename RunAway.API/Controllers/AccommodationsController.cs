@@ -1,6 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RunAway.API.Constants;
+using RunAway.API.Helpers;
+using RunAway.Application.Dtos.Accommodation;
+using RunAway.Application.Dtos.Room;
 using RunAway.Application.Features.Accommodations.Commands.AddRoom;
 using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
 using RunAway.Application.Features.Accommodations.Queries.GetAccommodationDetails;
@@ -18,15 +22,38 @@ namespace RunAway.API.Controllers
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Add new accommodation entity
+        /// POST: /api/Accommodation
+        /// </summary>
         [HttpPost]
-        [Authorize(Policy = "RequireAdminRole")]
-        public async Task<ActionResult<Guid>> Create([FromBody] CreateAccommodationCommand command)
+        [Authorize(Policy = UserAuthorizationPolicy.RequireAdminRole)]
+        public async Task<ActionResult<ApiResponse<CreateAccommodationResponseDto>>> Create([FromBody] CreateAccommodationCommand command)
         {
-            var accommodationId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = accommodationId }, accommodationId);
+            var result = await _mediator.Send(command);
+
+            return result.ToApiResponse(201, "Accommodation created successfully");
         }
 
+        /// <summary>
+        /// Add new room to existing accommodation entity
+        /// POST: /api/Accommodation/add-rooms
+        /// </summary>
+        [HttpPost("add-rooms")]
+        [Authorize(Policy = UserAuthorizationPolicy.RequireAdminRole)]
+        public async Task<ActionResult<ApiResponse<IList<CreateRoomResponseDto>>>> AddRoom([FromBody] AddRoomCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return result.ToApiResponse(201, "Room added successfully");
+        }
+
+        /// <summary>
+        /// Get accommodation detail properties
+        /// POST: /api/Accommodation/{{id}}
+        /// </summary>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<AccommodationDetailsViewModel>> GetById(Guid id)
         {
             var query = new GetAccommodationDetailsQuery { Id = id };
@@ -34,12 +61,5 @@ namespace RunAway.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{id}/rooms")]
-        public async Task<ActionResult<Guid>> AddRoom(Guid id, [FromBody] AddRoomCommand command)
-        {
-            command.AccommodationId = id;
-            var roomId = await _mediator.Send(command);
-            return Ok(roomId);
-        }
     }
 }

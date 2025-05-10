@@ -121,16 +121,21 @@ namespace RunAway.Domain.Entities
             SetUpdatedAt();
         }
 
-        public void AddRoom(RoomEntity room)
+        public void AddRoom(IList<RoomEntity> rooms)
         {
-            if (room == null)
-                throw new ArgumentNullException(nameof(room), "Room cannot be null.");
+            if (rooms == null || !rooms.Any())
+                throw new ArgumentNullException(nameof(rooms), "Room cannot be null.");
 
-            if (_rooms.Any(r => r.Id == room.Id))
-                throw new InvalidOperationException("Room already exists in this accommodation.");
+            foreach (var room in rooms)
+            {
+                if (_rooms.Any(r => r.Id == room.Id))
+                {
+                    throw new InvalidOperationException("Room already exists in this accommodation.");
+                }
 
-            room.AssignToAccommodation(this);
-            _rooms.Add(room);
+                room.AssignToAccommodation(this);
+                _rooms.Add(room);
+            }
             SetUpdatedAt();
         }
 

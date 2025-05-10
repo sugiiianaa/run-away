@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RunAway.Application.Dtos.Room;
 
 namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodations
 {
@@ -32,7 +33,7 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
         }
     }
 
-    public class CreateRoomDtoValidator : AbstractValidator<CreateRoomDto>
+    public class CreateRoomDtoValidator : AbstractValidator<CreateRoomRequestDto>
     {
         public CreateRoomDtoValidator()
         {
@@ -44,10 +45,10 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
                 .NotEmpty().WithMessage("Room description is required.")
                 .MaximumLength(1000).WithMessage("Room description must not exceed 1000 characters.");
 
-            RuleFor(r => r.Price)
+            RuleFor(r => r.Price.Amount)
                 .GreaterThan(0).WithMessage("Price must be greater than zero.");
 
-            RuleFor(r => r.Currency)
+            RuleFor(r => r.Price.Currency)
                 .NotEmpty().WithMessage("Currency is required.")
                 .Must(c => IsValidCurrency(c)).WithMessage("Currency must be a valid ISO currency code.");
 

@@ -4,6 +4,6 @@ namespace RunAway.Application.IRepositories
 {
     public interface IRoomRepository
     {
-        Task AddAsync(RoomEntity room);
+        Task AddAsync(IEnumerable<RoomEntity> room);
     }
 }

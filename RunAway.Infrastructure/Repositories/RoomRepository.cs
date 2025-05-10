@@ -12,9 +12,9 @@ namespace RunAway.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task AddAsync(RoomEntity room)
+        public async Task AddAsync(IEnumerable<RoomEntity> rooms)
         {
-            await _context.Rooms.AddAsync(room);
+            await _context.Rooms.AddRangeAsync(rooms);
         }
     }
 }
