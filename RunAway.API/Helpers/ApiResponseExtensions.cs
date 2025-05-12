@@ -27,16 +27,16 @@ namespace RunAway.API.Helpers
             return new ObjectResult(response) { StatusCode = statusCode };
         }
 
-        public static ActionResult<ApiResponse<object>> ToApiError(this ControllerBase controller, int statusCode, string message, List<string> errors = null)
+        public static ActionResult<ApiResponse<T>> ToApiError<T>(this ControllerBase controller, int statusCode, string message, List<string> errors = null)
         {
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<T>
             {
                 Success = false,
                 Message = message,
                 StatusCode = statusCode,
+                Data = default,
                 Errors = errors ?? new List<string>()
             };
-
             return controller.StatusCode(statusCode, response);
         }
     }

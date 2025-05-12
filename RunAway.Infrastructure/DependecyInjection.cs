@@ -37,6 +37,7 @@ namespace RunAway.Infrastructure
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IAccommodationService, AccommodationService>();
             services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

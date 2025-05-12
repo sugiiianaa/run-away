@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using RunAway.Application.Dtos.Room;
+using RunAway.Application.Dtos.Accommodation;
 
 namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodations
 {
@@ -33,7 +33,7 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
         }
     }
 
-    public class CreateRoomDtoValidator : AbstractValidator<CreateRoomRequestDto>
+    public class CreateRoomDtoValidator : AbstractValidator<CreateAccommodationRoomRequestDto>
     {
         public CreateRoomDtoValidator()
         {

@@ -50,15 +50,18 @@ namespace RunAway.API.Controllers
 
         /// <summary>
         /// Get accommodation detail properties
-        /// POST: /api/Accommodation/{{id}}
+        /// GET: /api/Accommodation/{{id}}
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<AccommodationDetailsViewModel>> GetById(Guid id)
+        public async Task<ActionResult<ApiResponse<GetAccomodationDetailResponseDto>>> GetById(Guid id)
         {
-            var query = new GetAccommodationDetailsQuery { Id = id };
-            var result = await _mediator.Send(query);
-            return Ok(result);
+            var result = await _mediator.Send(new GetAccommodationDetailsQuery { Id = id });
+
+            if (result == null)
+                return this.ToApiError<GetAccomodationDetailResponseDto>(404, "Accommodation not found");
+
+            return result.ToApiResponse(200);
         }
 
     }

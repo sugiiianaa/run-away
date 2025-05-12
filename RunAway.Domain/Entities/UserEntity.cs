@@ -28,12 +28,12 @@ namespace RunAway.Domain.Entities
 
         private UserEntity() { } // For entity framework
 
-        public UserEntity(
+        public static UserEntity Create(
             Guid id,
             Email email,
             string password,
             string name,
-            UserRoles role) : base(id)
+            UserRoles role)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentNullException("Password cannot be empty.", nameof(password));
@@ -47,11 +47,16 @@ namespace RunAway.Domain.Entities
             if (email == null)
                 throw new ArgumentNullException(nameof(email), "Email is required.");
 
-            Id = id;
-            Email = email;
-            Password = password;
-            Name = name;
-            Role = role;
+            var entity = new UserEntity
+            {
+                Id = id,
+                Email = email,
+                Password = password,
+                Name = name,
+                Role = role
+            };
+
+            return entity;
         }
 
         public void UpdateRoles(UserRoles role)

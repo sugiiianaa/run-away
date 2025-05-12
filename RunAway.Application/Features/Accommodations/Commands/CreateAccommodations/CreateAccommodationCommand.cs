@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using RunAway.Application.Dtos.Accommodation;
-using RunAway.Application.Dtos.Room;
 using RunAway.Application.IServices;
 
 namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodations
@@ -13,7 +12,7 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public required List<string> ImageUrls { get; set; }
-        public required List<CreateRoomRequestDto> Rooms { get; set; }
+        public required List<CreateAccommodationRoomRequestDto> Rooms { get; set; }
     }
 
     public class CreateAccommodationCommandHandler : IRequestHandler<CreateAccommodationCommand, CreateAccommodationResponseDto>

@@ -1,61 +1,47 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using RunAway.Application.Dtos;
-using RunAway.Application.IRepositories;
+using RunAway.Application.Dtos.User;
 using RunAway.Application.IServices;
-using RunAway.Domain.Commons;
-using RunAway.Domain.Enums;
-using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Application.Features.Users.Commands.CreateUser
 {
-    public class CreateUserCommand : IRequest<UserIdDto>
+    public class CreateUserCommand : IRequest<CreateUserResponseDto?>
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string Name { get; set; }
-        public UserRoles Role { get; set; } = UserRoles.User;
     }
 
-    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserIdDto>
+    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserResponseDto?>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
         private readonly ILogger<CreateUserCommandHandler> _logger;
-        private readonly IPasswordService _passwordService;
 
         public CreateUserCommandHandler(
-            IUserRepository userRepository,
-            IUnitOfWork unitOfWork,
-            ILogger<CreateUserCommandHandler> logger,
-            IPasswordService passwordService)
+            IUserService userService,
+            ILogger<CreateUserCommandHandler> logger)
         {
-            _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
+            _userService = userService;
             _logger = logger;
-            _passwordService = passwordService;
         }
 
-        public async Task<UserIdDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+
+        public async Task<CreateUserResponseDto?> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            // Check if user already exists
-            var email = new Email(request.Email);
-            var existingUser = await _userRepository.GetByEmailAsync(email);
+            // Check if user already exist
+            var existingUser = await _userService.GetUserEntityByEmailAsync(request.Email);
+
             if (existingUser != null)
+                // should return more proper value to make it easier found out what the problem later.
+                return null;
+
+            var newUser = await _userService.CreateUserAsync(request, cancellationToken);
+
+            return new CreateUserResponseDto
             {
-                throw new ArgumentException($"User with email {email.Value} already exists");
-            }
-
-            var hashedPassword = _passwordService.HashPassword(request.Password);
-            var user = UserMapper.ToUserEntity(Guid.NewGuid(), email, hashedPassword, request.Name, request.Role);
-
-            await _userRepository.AddAsync(user);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("User {UserId} created successfully", user.Id);
-
-            var result = UserMapper.ToUserIdDto(user);
-            return result;
+                Id = newUser.Id,
+                Email = newUser.Email
+            };
         }
     }
 
