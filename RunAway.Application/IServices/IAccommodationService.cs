@@ -1,5 +1,4 @@
 ﻿using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
-using RunAway.Application.Features.Accommodations.Queries.GetAccommodationDetails;
 using RunAway.Domain.Entities;
 
 namespace RunAway.Application.IServices
@@ -8,6 +7,6 @@ namespace RunAway.Application.IServices
     {
         public Task<AccommodationEntity> CreateAccommodationAsync(CreateAccommodationCommand command, CancellationToken cancellationToken);
 
-        public Task<AccommodationEntity?> GetAccommodationDetailAsync(GetAccommodationDetailsQuery query, CancellationToken cancellationToken);
+        public Task<AccommodationEntity?> GetAccommodationDetailAsync(Guid accommodationId, CancellationToken cancellationToken);
     }
 }

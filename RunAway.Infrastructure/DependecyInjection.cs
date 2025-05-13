@@ -31,6 +31,8 @@ namespace RunAway.Infrastructure
             services.AddScoped<IAccommodationRepository, AccommodationRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
 
             // Services
             services.AddScoped<IAuthService, AuthService>();
@@ -38,6 +40,8 @@ namespace RunAway.Infrastructure
             services.AddScoped<IAccommodationService, AccommodationService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IAccommodationAvailabilityService, AccommodationAvailabilityService>();
 
             return services;
         }

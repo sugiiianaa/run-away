@@ -19,7 +19,7 @@ namespace RunAway.Domain.Entities
         public TransactionStatus TransactionStatus { get; private set; }
 
         [Required]
-        public Money Amount { get; private set; }
+        public Money Price { get; private set; }
 
         [Required]
         public Guid RoomID { get; private set; }
@@ -43,27 +43,37 @@ namespace RunAway.Domain.Entities
 
         private TransactionRecordEntity() { }
 
-        public TransactionRecordEntity(
+        public static TransactionRecordEntity Create(
             Guid id,
-            Money amount,
+            Money price,
             Guid roomID,
             Guid userID,
-            List<Guest> guests) : base(id)
+            List<Guest> guests)
         {
-            ArgumentNullException.ThrowIfNull(amount, nameof(amount));
-            ArgumentNullException.ThrowIfNull(guests, nameof(guests));
-
-            if (!guests.Any())
-            {
+            // Validation 
+            if (price == null)
+                throw new ArgumentNullException(nameof(price), "Price cannot be null");
+            if (price.Amount < 0)
+                throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be lower than 0");
+            if (guests.Count == 0)
                 throw new ArgumentException("At least one guest is required", nameof(guests));
+
+            var entity = new TransactionRecordEntity
+            {
+                ID = id,
+                TransactionStatus = TransactionStatus.Pending,
+                Price = price,
+                RoomID = roomID,
+                UserID = userID,
+            };
+
+            // Add guests
+            foreach (var guest in guests)
+            {
+                entity._guests.Add(guest);
             }
 
-            Id = id;
-            TransactionStatus = TransactionStatus.Pending;
-            Amount = amount;
-            RoomID = roomID;
-            UserID = userID;
-            _guests = guests.ToList();
+            return entity;
         }
 
         public void UpdateTransactionStatus(TransactionStatus transactionStatus)

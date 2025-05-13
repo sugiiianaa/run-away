@@ -40,7 +40,7 @@ namespace RunAway.Application.Features.Users.Queries.LoginUser
                 return null;
 
 
-            var (token, expiresAt) = _authService.GenerateToken(user.Id, user.Email, user.Role);
+            var (token, expiresAt) = _authService.GenerateToken(user.ID, user.Email, user.Role);
 
             return new LoginUserResponseDto
             {

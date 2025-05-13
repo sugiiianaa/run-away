@@ -21,11 +21,10 @@ namespace RunAway.Application.Features.Accommodations.Queries.GetAccommodationDe
 
         public async Task<GetAccomodationDetailResponseDto?> Handle(GetAccommodationDetailsQuery request, CancellationToken cancellationToken)
         {
-            var accommodation = await _accommodationSerrvice.GetAccommodationDetailAsync(request, cancellationToken);
+            var accommodation = await _accommodationSerrvice.GetAccommodationDetailAsync(request.Id, cancellationToken);
 
             if (accommodation == null)
                 return null;
-
 
             return GetAccommodationDetailMapper.ToGetAccommodationDetailMapperDto(accommodation);
         }

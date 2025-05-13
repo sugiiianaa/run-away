@@ -33,7 +33,7 @@ namespace RunAway.Application.Dtos.Accommodation
         {
             return new GetAccomodationDetailResponseDto
             {
-                Id = accommodationEntity.Id,
+                Id = accommodationEntity.ID,
                 Name = accommodationEntity.Name,
                 Address = accommodationEntity.Address,
                 Latitude = accommodationEntity.Coordinate.Latitude,
@@ -42,7 +42,7 @@ namespace RunAway.Application.Dtos.Accommodation
                 Rooms = accommodationEntity.Rooms.Select(
                     r => new GetAccommoRoomDetailResponseDto
                     {
-                        Id = r.Id,
+                        Id = r.ID,
                         Name = r.Name,
                         Description = r.Description ?? string.Empty,
                         Price = r.Price.Amount,

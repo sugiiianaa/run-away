@@ -27,7 +27,7 @@ namespace RunAway.Domain.Test.Entities
 
             // Assert
             Assert.NotNull(room);
-            Assert.Equal(_validId, room.Id);
+            Assert.Equal(_validId, room.ID);
             Assert.Equal(_validName, room.Name);
             Assert.Equal(_validDescription, room.Description);
             Assert.Equal(_validPrice, room.Price);
@@ -106,7 +106,7 @@ namespace RunAway.Domain.Test.Entities
 
             // Assert
             Assert.NotNull(room.Accommodation);
-            Assert.Equal(accommodationId, room.Accommodation.Id);
+            Assert.Equal(accommodationId, room.Accommodation.ID);
 
             // Verify that UpdatedAt property is updated
             Assert.NotNull(room.LastUpdatedAt);

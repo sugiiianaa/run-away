@@ -35,12 +35,12 @@ namespace RunAway.Application.Dtos.Accommodation
         {
             return new CreateAccommodationResponseDto
             {
-                AccommodationId = accommodationEntity.Id,
+                AccommodationId = accommodationEntity.ID,
                 Name = accommodationEntity.Name,
                 Rooms = accommodationEntity.Rooms
                     .Select(room => new CreateAccommodationRoomResponse
                     {
-                        RoomId = room.Id,
+                        RoomId = room.ID,
                         Name = room.Name,
                         Price = room.Price
                     })

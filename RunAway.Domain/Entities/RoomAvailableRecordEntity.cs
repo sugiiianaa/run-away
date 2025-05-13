@@ -4,7 +4,6 @@ namespace RunAway.Domain.Entities
 {
     public class RoomAvailableRecordEntity : AuditableEntity<Guid>
     {
-        public Guid Id { get; private set; }
         public Guid RoomId { get; private set; }
         public DateOnly Date { get; private set; }
         public int AvailableRooms { get; private set; }
@@ -26,7 +25,7 @@ namespace RunAway.Domain.Entities
             return new RoomAvailableRecordEntity
             {
 
-                Id = id,
+                ID = id,
                 RoomId = roomId,
                 Date = date,
                 AvailableRooms = availableRooms,

@@ -5,6 +5,8 @@ namespace RunAway.Application.IServices
 {
     public interface IRoomService
     {
+        // TODO : should add check availability service later
         public Task<IList<RoomEntity>> AddRoomAsync(AddRoomCommand command, CancellationToken cancellationToken);
+        public Task<RoomEntity?> GetRoomByIDAsync(Guid roomID);
     }
 }

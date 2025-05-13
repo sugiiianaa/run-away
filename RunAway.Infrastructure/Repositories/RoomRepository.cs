@@ -1,4 +1,5 @@
-﻿using RunAway.Application.IRepositories;
+﻿using Microsoft.EntityFrameworkCore;
+using RunAway.Application.IRepositories;
 using RunAway.Domain.Entities;
 using RunAway.Infrastructure.Persistence;
 
@@ -15,6 +16,11 @@ namespace RunAway.Infrastructure.Repositories
         public async Task AddAsync(IEnumerable<RoomEntity> rooms)
         {
             await _context.Rooms.AddRangeAsync(rooms);
+        }
+
+        public async Task<RoomEntity?> GetRoomByIDAsync(Guid roomID)
+        {
+            return await _context.Rooms.FirstOrDefaultAsync(r => r.ID == roomID);
         }
     }
 }

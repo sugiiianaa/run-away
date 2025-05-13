@@ -69,7 +69,7 @@ namespace RunAway.Domain.Entities
 
             var entity = new AccommodationEntity
             {
-                Id = id,
+                ID = id,
                 Name = name,
                 Address = address,
                 Coordinate = coordinate
@@ -128,7 +128,7 @@ namespace RunAway.Domain.Entities
 
             foreach (var room in rooms)
             {
-                if (_rooms.Any(r => r.Id == room.Id))
+                if (_rooms.Any(r => r.ID == room.ID))
                 {
                     throw new InvalidOperationException("Room already exists in this accommodation.");
                 }
@@ -141,7 +141,7 @@ namespace RunAway.Domain.Entities
 
         public void RemoveRoom(Guid roomId)
         {
-            var room = _rooms.FirstOrDefault(r => r.Id == roomId);
+            var room = _rooms.FirstOrDefault(r => r.ID == roomId);
             if (room != null)
             {
                 _rooms.Remove(room);

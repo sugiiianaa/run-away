@@ -42,5 +42,10 @@ namespace RunAway.Infrastructure.Services
 
             return rooms;
         }
+
+        public async Task<RoomEntity?> GetRoomByIDAsync(Guid roomID)
+        {
+            return await _roomRepository.GetRoomByIDAsync(roomID);
+        }
     }
 }

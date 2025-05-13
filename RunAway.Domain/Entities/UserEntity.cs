@@ -49,7 +49,7 @@ namespace RunAway.Domain.Entities
 
             var entity = new UserEntity
             {
-                Id = id,
+                ID = id,
                 Email = email,
                 Password = password,
                 Name = name,

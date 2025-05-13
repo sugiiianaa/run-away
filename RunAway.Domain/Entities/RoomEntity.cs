@@ -67,7 +67,7 @@ namespace RunAway.Domain.Entities
             var entity = new RoomEntity
             {
 
-                Id = id,
+                ID = id,
                 Name = name,
                 Description = description,
                 Price = price,
@@ -89,7 +89,7 @@ namespace RunAway.Domain.Entities
             if (Accommodation is not null)
                 throw new InvalidOperationException("Cannot assign room to a different accommodation as it is already assigned to an accommodation.");
 
-            AccommodationId = accommodation.Id;
+            AccommodationId = accommodation.ID;
             Accommodation = accommodation;
             SetUpdatedAt();
         }
@@ -146,7 +146,7 @@ namespace RunAway.Domain.Entities
             }
             else
             {
-                var newRecord = RoomAvailableRecordEntity.Create(Guid.NewGuid(), Id, date, availableRooms);
+                var newRecord = RoomAvailableRecordEntity.Create(Guid.NewGuid(), ID, date, availableRooms);
                 _roomAvailabilityRecords.Add(newRecord);
             }
 
@@ -206,7 +206,7 @@ namespace RunAway.Domain.Entities
         /// </summary>
         internal void AddAvailabilityRecord(RoomAvailableRecordEntity record)
         {
-            if (record.RoomId != Id)
+            if (record.RoomId != ID)
                 throw new ArgumentException("Availability record must belong to this room", nameof(record));
 
             _roomAvailabilityRecords.Add(record);

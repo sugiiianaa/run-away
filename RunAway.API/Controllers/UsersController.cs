@@ -33,6 +33,7 @@ namespace RunAway.API.Controllers
         /// POST: /api/Users/login
         /// </summary>
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<LoginUserResponseDto>>> Login([FromBody] LoginUserQuery query)
         {
             var result = await mediator.Send(query);

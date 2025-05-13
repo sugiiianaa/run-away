@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RunAway.Domain.ValueObjects
+﻿namespace RunAway.Domain.ValueObjects
 {
     public sealed class Money : IEquatable<Money>
     {

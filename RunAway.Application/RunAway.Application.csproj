@@ -20,8 +20,4 @@
     <ProjectReference Include="..\RunAway.Domain\RunAway.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commons\" />
-  </ItemGroup>
-
 </Project>

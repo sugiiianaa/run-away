@@ -1,23 +1,23 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RunAway.API.Constants;
 using RunAway.API.Helpers;
 using RunAway.Application.Dtos.Accommodation;
 using RunAway.Application.Dtos.Room;
 using RunAway.Application.Features.Accommodations.Commands.AddRoom;
 using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
 using RunAway.Application.Features.Accommodations.Queries.GetAccommodationDetails;
+using RunAway.Infrastructure.Constants;
 
 namespace RunAway.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccommodationsController : ControllerBase
+    public class AccommodationController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public AccommodationsController(IMediator mediator)
+        public AccommodationController(IMediator mediator)
         {
             _mediator = mediator;
         }

@@ -1,5 +1,4 @@
 ﻿using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
-using RunAway.Application.Features.Accommodations.Queries.GetAccommodationDetails;
 using RunAway.Application.IRepositories;
 using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
@@ -49,9 +48,9 @@ namespace RunAway.Infrastructure.Services
             return accommodation;
         }
 
-        public async Task<AccommodationEntity?> GetAccommodationDetailAsync(GetAccommodationDetailsQuery query, CancellationToken cancellationToken)
+        public async Task<AccommodationEntity?> GetAccommodationDetailAsync(Guid accommodationId, CancellationToken cancellationToken)
         {
-            return await _accommodationRepository.GetByIdWithRoomsAsync(query.Id);
+            return await _accommodationRepository.GetByIdWithRoomsAsync(accommodationId);
         }
     }
 }

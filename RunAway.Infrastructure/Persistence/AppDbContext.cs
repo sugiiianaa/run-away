@@ -24,10 +24,10 @@ namespace RunAway.Infrastructure.Persistence
             modelBuilder.Entity<AccommodationEntity>(entity =>
             {
                 entity.ToTable("accommodations");
-                entity.HasKey(e => e.Id).HasName("pk_accommodations");
+                entity.HasKey(e => e.ID).HasName("pk_accommodations");
 
                 // Property column name configuration
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.ID).HasColumnName("id");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Address).HasColumnName("address");
                 entity.Property(e => e.ImageUrls).HasColumnName("image_urls");
@@ -61,10 +61,10 @@ namespace RunAway.Infrastructure.Persistence
             modelBuilder.Entity<RoomEntity>(entity =>
             {
                 entity.ToTable("rooms");
-                entity.HasKey(e => e.Id).HasName("pk_rooms");
+                entity.HasKey(e => e.ID).HasName("pk_rooms");
 
                 // Property column name configuration
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.ID).HasColumnName("id");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Description).HasColumnName("description");
                 entity.Property(e => e.AccommodationId).HasColumnName("accommodation_id");
@@ -90,10 +90,10 @@ namespace RunAway.Infrastructure.Persistence
             modelBuilder.Entity<UserEntity>(entity =>
             {
                 entity.ToTable("users");
-                entity.HasKey(e => e.Id).HasName("pk_users");
+                entity.HasKey(e => e.ID).HasName("pk_users");
 
                 // Property column name configuration
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.ID).HasColumnName("id");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Password).HasColumnName("password");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
@@ -124,17 +124,17 @@ namespace RunAway.Infrastructure.Persistence
             modelBuilder.Entity<TransactionRecordEntity>(entity =>
             {
                 entity.ToTable("transaction_records");
-                entity.HasKey(e => e.Id).HasName("pk_transactions_records");
+                entity.HasKey(e => e.ID).HasName("pk_transactions_records");
 
                 // Property column name configuration
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.ID).HasColumnName("id");
                 entity.Property(e => e.RoomID).HasColumnName("room_id");
                 entity.Property(e => e.UserID).HasColumnName("user_id");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
                 entity.Property(e => e.TransactionStatus).HasColumnName("transaction_status");
 
-                entity.OwnsOne(e => e.Amount, money =>
+                entity.OwnsOne(e => e.Price, money =>
                 {
                     money.Property(m => m.Amount).HasColumnName("amount");
                     money.Property(m => m.Currency).HasColumnName("currency");
@@ -168,10 +168,10 @@ namespace RunAway.Infrastructure.Persistence
             modelBuilder.Entity<RoomAvailableRecordEntity>(entity =>
             {
                 entity.ToTable("room_available_records");
-                entity.HasKey(e => e.Id).HasName("pk_room_available_records");
+                entity.HasKey(e => e.ID).HasName("pk_room_available_records");
 
                 // Property column name configuration
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.ID).HasColumnName("id");
                 entity.Property(e => e.RoomId).HasColumnName("room_id");
                 entity.Property(e => e.AvailableRooms).HasColumnName("available_rooms");
                 entity.Property(e => e.Date).HasColumnName("date");

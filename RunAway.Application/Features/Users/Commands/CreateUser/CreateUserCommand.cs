@@ -39,7 +39,7 @@ namespace RunAway.Application.Features.Users.Commands.CreateUser
 
             return new CreateUserResponseDto
             {
-                Id = newUser.Id,
+                Id = newUser.ID,
                 Email = newUser.Email
             };
         }

@@ -5,14 +5,9 @@ using RunAway.Infrastructure.Persistence;
 
 namespace RunAway.Infrastructure.Repositories
 {
-    public class AccommodationRepository : IAccommodationRepository
+    public class AccommodationRepository(AppDbContext context) : IAccommodationRepository
     {
-        private readonly AppDbContext _context;
-
-        public AccommodationRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task AddAsync(AccommodationEntity entity)
         {
@@ -32,14 +27,14 @@ namespace RunAway.Infrastructure.Repositories
         {
             return await _context.Accommodations
                 .Include(a => a.Rooms)
-                .FirstOrDefaultAsync(a => a.Id == id);
+                .FirstOrDefaultAsync(a => a.ID == id);
         }
 
         public async Task<AccommodationEntity?> GetByIdWithRoomsAsync(Guid id)
         {
             return await _context.Accommodations
                 .Include(a => a.Rooms)
-                .FirstOrDefaultAsync(a => a.Id == id);
+                .FirstOrDefaultAsync(a => a.ID == id);
         }
 
         public Task UpdateAsync(AccommodationEntity entity)

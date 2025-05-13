@@ -36,7 +36,7 @@ namespace RunAway.Infrastructure.Repositories
 
         public async Task<UserEntity?> GetByIdAsync(Guid id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.ID == id);
         }
 
         public Task UpdateAsync(UserEntity entity)
