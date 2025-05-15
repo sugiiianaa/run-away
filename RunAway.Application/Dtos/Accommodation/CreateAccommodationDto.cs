@@ -7,7 +7,7 @@ namespace RunAway.Application.Dtos.Accommodation
     public class CreateAccommodationRoomRequestDto
     {
         public required string Name { get; init; }
-        public string? Description { get; init; }
+        public required string Description { get; init; }
         public required Money Price { get; init; }
         public required List<string> Facilities { get; init; } = [];
     }

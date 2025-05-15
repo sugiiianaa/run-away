@@ -133,6 +133,8 @@ namespace RunAway.Infrastructure.Persistence
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
                 entity.Property(e => e.TransactionStatus).HasColumnName("transaction_status");
+                entity.Property(e => e.CheckInDate).HasColumnName("check_in_date");
+                entity.Property(e => e.CheckOutDate).HasColumnName("check_out_date");
 
                 entity.OwnsOne(e => e.Price, money =>
                 {

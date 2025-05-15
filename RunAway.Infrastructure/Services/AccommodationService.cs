@@ -1,4 +1,5 @@
-﻿using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
+﻿using RunAway.Application.Commons;
+using RunAway.Application.Features.Accommodations.Commands.CreateAccommodations;
 using RunAway.Application.IRepositories;
 using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
@@ -20,7 +21,7 @@ namespace RunAway.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AccommodationEntity> CreateAccommodationAsync(
+        public async Task<Result<AccommodationEntity>> CreateAccommodationAsync(
             CreateAccommodationCommand command,
             CancellationToken cancellationToken)
         {
@@ -45,12 +46,18 @@ namespace RunAway.Infrastructure.Services
             await _accommodationRepository.AddAsync(accommodation);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return accommodation;
+            return Result<AccommodationEntity>.Success(accommodation);
         }
 
-        public async Task<AccommodationEntity?> GetAccommodationDetailAsync(Guid accommodationId, CancellationToken cancellationToken)
+        public async Task<Result<AccommodationEntity>> GetAccommodationDetailAsync(Guid accommodationId, CancellationToken cancellationToken)
         {
-            return await _accommodationRepository.GetByIdWithRoomsAsync(accommodationId);
+            var accommodation = await _accommodationRepository.GetByIdWithRoomsAsync(accommodationId);
+            if (accommodation == null)
+            {
+                return Result<AccommodationEntity>.Failure("Accommodation not found", 404, ErrorCode.InvalidArgument);
+            }
+
+            return Result<AccommodationEntity>.Success(accommodation);
         }
     }
 }

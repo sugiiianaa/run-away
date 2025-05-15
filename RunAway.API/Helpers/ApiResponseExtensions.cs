@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RunAway.Application.Commons;
 
 namespace RunAway.API.Helpers
 {
@@ -7,27 +8,31 @@ namespace RunAway.API.Helpers
         public bool Success { get; set; }
         public string? Message { get; set; }
         public T? Data { get; set; }
-        public List<string> Errors { get; set; } = new List<string>();
+        public List<string>? ValidationErrors { get; set; }
         public int StatusCode { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 
     public static class ApiResponseExtensions
     {
-        public static ActionResult<ApiResponse<T>> ToApiResponse<T>(this T data, int statusCode = 200, string message = "Success")
+        public static ActionResult<ApiResponse<T>> ToApiResponse<T>(this Result<T> result, int successStatusCode = 200, string successMessage = "Success")
         {
-            var response = new ApiResponse<T>
+            if (result.IsSuccess)
             {
-                Success = true,
-                Message = message,
-                Data = data,
-                StatusCode = statusCode
-            };
+                var response = new ApiResponse<T>
+                {
+                    Success = true,
+                    Message = successMessage,
+                    Data = result.Value,
+                    StatusCode = successStatusCode
+                };
+                return new ObjectResult(response) { StatusCode = successStatusCode };
+            }
 
-            return new ObjectResult(response) { StatusCode = statusCode };
+            return ToApiError<T>(ConvertErrorCodeToStatusCode(result.ErrorCode), result.ErrorMessage, result.ValidationErrors);
         }
 
-        public static ActionResult<ApiResponse<T>> ToApiError<T>(this ControllerBase controller, int statusCode, string message, List<string> errors = null)
+        public static ActionResult<ApiResponse<T>> ToApiError<T>(int statusCode, string message, List<string>? validationErrors = null)
         {
             var response = new ApiResponse<T>
             {
@@ -35,9 +40,39 @@ namespace RunAway.API.Helpers
                 Message = message,
                 StatusCode = statusCode,
                 Data = default,
-                Errors = errors ?? new List<string>()
+                ValidationErrors = validationErrors
             };
-            return controller.StatusCode(statusCode, response);
+            return new ObjectResult(response) { StatusCode = statusCode };
+        }
+
+        // Extension method to maintain compatibility with controllers directly creating errors
+        public static ActionResult<ApiResponse<T>> ToApiError<T>(this ControllerBase controller, int statusCode, string message, List<string>? errors = null)
+        {
+            var response = new ApiResponse<T>
+            {
+                Success = false,
+                Message = message,
+                StatusCode = statusCode,
+                Data = default,
+                ValidationErrors = errors
+            };
+            return new ObjectResult(response) { StatusCode = statusCode };
+        }
+
+        private static int ConvertErrorCodeToStatusCode(ErrorCode errorCode)
+        {
+            return errorCode switch
+            {
+                ErrorCode.NotFound => 404,
+
+                ErrorCode.ValidationError or
+                ErrorCode.InvalidArgument or
+                ErrorCode.InvalidOperation => 400,
+
+                ErrorCode.Unauthorized => 401,
+
+                _ => 500
+            };
         }
     }
 }

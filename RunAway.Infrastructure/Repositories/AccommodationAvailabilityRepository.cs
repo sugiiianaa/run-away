@@ -14,9 +14,21 @@ namespace RunAway.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddRoomAvailability(IList<RoomAvailableRecordEntity> roomaAavailableRecordEntities)
+        public async Task AddRoomAvailabilityAsync(IList<RoomAvailableRecordEntity> roomaAavailableRecordEntities)
         {
             await _context.AddRangeAsync(roomaAavailableRecordEntities);
+        }
+
+        public async Task<IList<RoomAvailableRecordEntity>?> GetAvailabilitityOnDateRangeAsync(Guid roomID, DateOnly checkInDate, DateOnly checkOutDate, int numberOfRoom)
+        {
+            var availability = await _context.RoomAvailableRecords
+                   .Where(ra => ra.RoomId == roomID &&
+                               ra.Date >= checkInDate &&
+                               ra.Date < checkOutDate &&
+                               ra.AvailableRooms >= numberOfRoom)
+                   .ToListAsync();
+
+            return availability;
         }
 
         public async Task<RoomAvailableRecordEntity?> GetAvailabilityOnSpesificDateAsync(Guid roomID, DateOnly date)

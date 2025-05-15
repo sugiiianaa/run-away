@@ -1,15 +1,16 @@
 ﻿using MediatR;
+using RunAway.Application.Commons;
 using RunAway.Application.Dtos.AccommodationAvailability;
 using RunAway.Application.IServices;
 
 namespace RunAway.Application.Features.AccommodationAvailabilities.Commands.AddRoomAvailabilities
 {
-    public class AddRoomAvailabilitiesCommand : IRequest<CreateAccommodationAvailabilityResponseDto?>
+    public class AddRoomAvailabilitiesCommand : IRequest<Result<CreateAccommodationAvailabilityResponseDto?>>
     {
         public required CreateAccommodationAvailabilityRequestDto RoomAvailabilities { get; set; }
     }
 
-    public class AddRoomAvailabilitiesCommandHandler : IRequestHandler<AddRoomAvailabilitiesCommand, CreateAccommodationAvailabilityResponseDto?>
+    public class AddRoomAvailabilitiesCommandHandler : IRequestHandler<AddRoomAvailabilitiesCommand, Result<CreateAccommodationAvailabilityResponseDto?>>
     {
         private readonly IAccommodationAvailabilityService _accommodationAvailabilityService;
 
@@ -18,14 +19,25 @@ namespace RunAway.Application.Features.AccommodationAvailabilities.Commands.AddR
             _accommodationAvailabilityService = accommodationAvailabilityService;
         }
 
-        public async Task<CreateAccommodationAvailabilityResponseDto?> Handle(AddRoomAvailabilitiesCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CreateAccommodationAvailabilityResponseDto?>> Handle(AddRoomAvailabilitiesCommand request, CancellationToken cancellationToken)
         {
-            var roomAvailabilitiesRecord = await _accommodationAvailabilityService.AddRoomAvailability(request.RoomAvailabilities);
+            // Call the service method which returns Result<IList<RoomAvailableRecordEntity>>
+            var result = await _accommodationAvailabilityService.AddRoomAvailabilityAsync(request.RoomAvailabilities);
 
-            if (roomAvailabilitiesRecord == null)
-                return null;
+            // If service operation failed, return the error with same message and code
+            if (!result.IsSuccess)
+            {
+                return Result<CreateAccommodationAvailabilityResponseDto?>.Failure(
+                    result.ErrorMessage,
+                    result.ApiResponseErrorCode,
+                    result.ErrorCode);
+            }
 
-            return CreateAccommodationAvailabilityMapper.ToCreateAccommodationAvailabilityResponseDto(roomAvailabilitiesRecord);
+            // Map the successful result to response DTO
+            var responseDto = CreateAccommodationAvailabilityMapper.ToCreateAccommodationAvailabilityResponseDto(result.Value);
+
+            // Return success with mapped DTO
+            return Result<CreateAccommodationAvailabilityResponseDto?>.Success(responseDto);
         }
     }
 }

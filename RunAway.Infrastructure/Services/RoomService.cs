@@ -1,4 +1,5 @@
-﻿using RunAway.Application.Features.Accommodations.Commands.AddRoom;
+﻿using RunAway.Application.Commons;
+using RunAway.Application.Features.Accommodations.Commands.AddRoom;
 using RunAway.Application.IRepositories;
 using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
@@ -19,18 +20,26 @@ namespace RunAway.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IList<RoomEntity>> AddRoomAsync(
+        public async Task<Result<IList<RoomEntity>?>> AddRoomAsync(
             AddRoomCommand command,
             CancellationToken cancellationToken)
         {
-            var accommodation = await _accommodationRepository.GetByIdAsync(command.AccommodationId)
-              ?? throw new InvalidOperationException("Cannot add room to non existent accommodation");
+            var accommodation = await _accommodationRepository.GetByIdAsync(command.AccommodationId);
+
+
+            if (accommodation == null)
+            {
+                return Result<IList<RoomEntity>?>.Failure(
+                    "Cannot add room to non existent accommodation",
+                    400,
+                    ErrorCode.InvalidOperation);
+            }
 
             var rooms = command.Rooms.Select(
                 r => RoomEntity.Create(
                     Guid.NewGuid(),
                     r.Name,
-                    r.Description!,
+                    r.Description,
                     r.Price,
                     r.Facilities)).ToList();
 
@@ -40,7 +49,7 @@ namespace RunAway.Infrastructure.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return rooms;
+            return Result<IList<RoomEntity>?>.Success(rooms);
         }
 
         public async Task<RoomEntity?> GetRoomByIDAsync(Guid roomID)

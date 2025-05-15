@@ -6,6 +6,8 @@ namespace RunAway.Application.IRepositories
     {
         public Task<RoomAvailableRecordEntity?> GetAvailabilityOnSpesificDateAsync(Guid roomID, DateOnly date);
 
-        public Task AddRoomAvailability(IList<RoomAvailableRecordEntity> roomaAavailableRecordEntities);
+        public Task<IList<RoomAvailableRecordEntity>?> GetAvailabilitityOnDateRangeAsync(Guid roomID, DateOnly checkInDate, DateOnly checkOutDate, int numberOfRoom);
+
+        public Task AddRoomAvailabilityAsync(IList<RoomAvailableRecordEntity> roomaAavailableRecordEntities);
     }
 }

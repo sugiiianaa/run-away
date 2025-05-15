@@ -11,6 +11,8 @@ namespace RunAway.Application.IServices
             Guid UserId,
             Money Price,
             IList<Guest> Guests,
+            DateOnly CheckInDate,
+            DateOnly CheckOutDate,
             CancellationToken cancellationToken = default);
     }
 }

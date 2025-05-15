@@ -22,6 +22,8 @@ namespace RunAway.Infrastructure.Services
             Guid UserId,
             Money Price,
             IList<Guest> Guests,
+            DateOnly CheckInDate,
+            DateOnly CheckOutDate,
             CancellationToken cancellationToken)
         {
             var transactionPrice = new Money(Price.Amount, Price.Currency);
@@ -31,7 +33,9 @@ namespace RunAway.Infrastructure.Services
                 transactionPrice,
                 RoomId,
                 UserId,
-                Guests.ToList());
+                Guests.ToList(),
+                CheckInDate,
+                CheckOutDate);
 
             await _transactionRepository.AddAsync(transactionEntity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,4 +1,5 @@
-﻿using RunAway.Application.Dtos.AccommodationAvailability;
+﻿using RunAway.Application.Commons;
+using RunAway.Application.Dtos.AccommodationAvailability;
 using RunAway.Application.IRepositories;
 using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
@@ -17,18 +18,23 @@ namespace RunAway.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IList<RoomAvailableRecordEntity>?> AddRoomAvailability(CreateAccommodationAvailabilityRequestDto request)
+        public async Task<Result<IList<RoomAvailableRecordEntity>>> AddRoomAvailabilityAsync(CreateAccommodationAvailabilityRequestDto request)
         {
-            // check if room id with same date already exist
+            // Check if room id with same date already exists
             foreach (var roomAvailability in request.RoomAvailability)
             {
-                var RoomAvailabilityRecord = await _accommodationAvailabilityRepository.GetAvailabilityOnSpesificDateAsync(roomAvailability.RoomID, roomAvailability.AvailableDate);
+                var roomAvailabilityRecord = await _accommodationAvailabilityRepository.GetAvailabilityOnSpesificDateAsync(
+                    roomAvailability.RoomID,
+                    roomAvailability.AvailableDate);
 
-                // TODO : return proper error 
-                if (RoomAvailabilityRecord != null)
-                    return null;
+                if (roomAvailabilityRecord != null)
+                {
+                    return Result<IList<RoomAvailableRecordEntity>>.Failure(
+                        $"Availability record already exists for room {roomAvailability.RoomID} on {roomAvailability.AvailableDate}",
+                        400,
+                        ErrorCode.InvalidOperation);
+                }
             }
-
 
             var roomAvailableRecordEntities = request.RoomAvailability.Select(
                 ra => RoomAvailableRecordEntity.Create(
@@ -37,10 +43,42 @@ namespace RunAway.Infrastructure.Services
                     ra.AvailableDate,
                     ra.AvailableRooms)).ToList();
 
-            await _accommodationAvailabilityRepository.AddRoomAvailability(roomAvailableRecordEntities);
+            await _accommodationAvailabilityRepository.AddRoomAvailabilityAsync(roomAvailableRecordEntities);
             await _unitOfWork.SaveChangesAsync();
 
-            return roomAvailableRecordEntities;
+            return Result<IList<RoomAvailableRecordEntity>>.Success(roomAvailableRecordEntities);
+        }
+
+        public async Task<IList<RoomAvailableRecordEntity>?> GetRoomAvailabilityOnDateRangeAsync(Guid roomID, DateOnly checkInDate, DateOnly checkOutDate, int numberOfRoom)
+        {
+            return await _accommodationAvailabilityRepository.GetAvailabilitityOnDateRangeAsync(roomID, checkInDate, checkOutDate, numberOfRoom);
+        }
+
+        public async Task<Result<bool>> UpdateRoomAvailabilityAsync(Guid roomID, DateOnly checkInDate, DateOnly checkOutDate, int numberOfRoomsToBook)
+        {
+            // Get all availability records for the date range
+            var availabilityRecords = await _accommodationAvailabilityRepository.GetAvailabilitityOnDateRangeAsync(
+                roomID,
+                checkInDate,
+                checkOutDate,
+                numberOfRoomsToBook);
+
+            if (availabilityRecords == null || !availabilityRecords.Any())
+            {
+                return Result<bool>.Failure(
+                    "No availability records found for the specified date range",
+                    400,
+                    ErrorCode.InvalidArgument);
+            }
+
+            // Update each record to decrease the number of available rooms
+            foreach (var record in availabilityRecords)
+            {
+                record.DecreaseAvailableRooms(numberOfRoomsToBook);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
     }
 }

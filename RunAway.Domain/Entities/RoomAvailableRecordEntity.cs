@@ -39,5 +39,16 @@ namespace RunAway.Domain.Entities
 
             AvailableRooms = availableRooms;
         }
+
+        public void DecreaseAvailableRooms(int count)
+        {
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than zero", nameof(count));
+
+            if (AvailableRooms < count)
+                throw new InvalidOperationException("Not enough rooms available");
+
+            AvailableRooms -= count;
+        }
     }
 }

@@ -1,16 +1,17 @@
 ﻿using MediatR;
+using RunAway.Application.Commons;
 using RunAway.Application.Dtos.User;
 using RunAway.Application.IServices;
 
 namespace RunAway.Application.Features.Users.Queries.LoginUser
 {
-    public class LoginUserQuery : IRequest<LoginUserResponseDto?>
+    public class LoginUserQuery : IRequest<Result<LoginUserResponseDto>>
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
     }
 
-    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, LoginUserResponseDto?>
+    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, Result<LoginUserResponseDto>>
     {
         private readonly IUserService _userService;
         private readonly IPasswordService _passwordService;
@@ -26,27 +27,29 @@ namespace RunAway.Application.Features.Users.Queries.LoginUser
             _authService = authService;
         }
 
-        public async Task<LoginUserResponseDto?> Handle(LoginUserQuery request, CancellationToken cancellationToken)
+        public async Task<Result<LoginUserResponseDto>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
             // Check if user is exist
             var user = await _userService.GetUserEntityByEmailAsync(request.Email);
 
             if (user == null)
-                // should return more proper value to make it easier found out what the problem later.
-                return null;
+            {
+                return Result<LoginUserResponseDto>.Failure("User is not registered", 400, ErrorCode.InvalidArgument);
+            }
 
             if (!_passwordService.VerifyPassword(request.Password, user.Password))
-                // should return more proper value to make it easier found out what the problem later.
-                return null;
+            {
+                return Result<LoginUserResponseDto>.Failure("Username or password is invalid", 400, ErrorCode.InvalidOperation);
+            }
 
 
             var (token, expiresAt) = _authService.GenerateToken(user.ID, user.Email, user.Role);
 
-            return new LoginUserResponseDto
+            return Result<LoginUserResponseDto>.Success(new LoginUserResponseDto
             {
                 Token = token,
                 ExpiredDate = expiresAt
-            };
+            });
         }
     }
 }

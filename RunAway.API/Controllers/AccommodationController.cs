@@ -45,6 +45,11 @@ namespace RunAway.API.Controllers
         {
             var result = await _mediator.Send(command);
 
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<IList<CreateRoomResponseDto>>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
+
             return result.ToApiResponse(201, "Room added successfully");
         }
 
@@ -59,7 +64,7 @@ namespace RunAway.API.Controllers
             var result = await _mediator.Send(new GetAccommodationDetailsQuery { Id = id });
 
             if (result == null)
-                return this.ToApiError<GetAccomodationDetailResponseDto>(404, "Accommodation not found");
+                return this.ToApiError<GetAccomodationDetailResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
 
             return result.ToApiResponse(200);
         }

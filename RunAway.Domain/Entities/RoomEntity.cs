@@ -14,7 +14,8 @@ namespace RunAway.Domain.Entities
 
         [Required]
         public string Name { get; private set; }
-        public string? Description { get; private set; }
+        [Required]
+        public string Description { get; private set; }
         [Required]
         public Money Price { get; private set; }
 

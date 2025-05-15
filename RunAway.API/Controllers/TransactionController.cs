@@ -10,27 +10,37 @@ namespace RunAway.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TransactionController : ControllerBase
+    public class TransactionController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public TransactionController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        private readonly IMediator _mediator = mediator;
 
         /// <summary>
         /// Create new transaction
+        /// POST: /api/Transaction/create-transaction
         /// </summary>
-        /// <returns></returns>
         [HttpPost("create-transaction")]
         [Authorize(Policy = UserAuthorizationPolicy.RequireUserRole)]
-        public async Task<ActionResult<ApiResponse<CreateTransactionResponseDto>>> CreateTransaction([FromBody] CreateTransactionCommand command)
+        public async Task<ActionResult<ApiResponse<CreateTransactionResponseDto>>> CreateTransaction([FromBody] CreateTransactionRequestDto requestDTO)
         {
-            var result = await _mediator.Send(command);
+            // Get user email from JWT token
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return this.ToApiError<CreateTransactionResponseDto>(401, "User not authenticated properly");
+            }
 
-            if (result == null)
-                return this.ToApiError<CreateTransactionResponseDto>(400, "Invalid input");
+
+            var command = new CreateTransactionCommand
+            {
+                RoomID = requestDTO.RoomID,
+                UserEmail = userEmail,
+                Guests = requestDTO.Guests,
+                NumberOfRoom = requestDTO.NumberOfRoom,
+                CheckInDate = requestDTO.CheckInDate,
+                CheckOutDate = requestDTO.CheckOutDate
+            };
+
+            var result = await _mediator.Send(command);
 
             return result.ToApiResponse(201, "Transaction recorded successfully");
         }

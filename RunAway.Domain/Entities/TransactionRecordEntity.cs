@@ -27,6 +27,12 @@ namespace RunAway.Domain.Entities
         [Required]
         public Guid UserID { get; private set; }
 
+        [Required]
+        public DateOnly CheckInDate { get; private set; }
+
+        [Required]
+        public DateOnly CheckOutDate { get; private set; }
+
 
         [Required]
         public IReadOnlyCollection<Guest> Guests => _guests.AsReadOnly();
@@ -48,7 +54,9 @@ namespace RunAway.Domain.Entities
             Money price,
             Guid roomID,
             Guid userID,
-            List<Guest> guests)
+            List<Guest> guests,
+            DateOnly checkInDate,
+            DateOnly checkOutDate)
         {
             // Validation 
             if (price == null)
@@ -57,6 +65,8 @@ namespace RunAway.Domain.Entities
                 throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be lower than 0");
             if (guests.Count == 0)
                 throw new ArgumentException("At least one guest is required", nameof(guests));
+            if (checkInDate > checkOutDate)
+                throw new ArgumentException("Checkout date cannot before checkin date", nameof(checkInDate));
 
             var entity = new TransactionRecordEntity
             {
@@ -65,6 +75,8 @@ namespace RunAway.Domain.Entities
                 Price = price,
                 RoomID = roomID,
                 UserID = userID,
+                CheckInDate = checkInDate,
+                CheckOutDate = checkOutDate
             };
 
             // Add guests
