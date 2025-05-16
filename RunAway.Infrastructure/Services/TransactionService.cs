@@ -20,20 +20,28 @@ namespace RunAway.Infrastructure.Services
         public async Task<TransactionRecordEntity> CreateTransactionAsync(
             Guid RoomId,
             Guid UserId,
-            Money Price,
+            string currency,
+            decimal unitPrice,
+            int numberOfUnits,
+            int numberOfDays,
+            decimal discount,
+            decimal fee,
             IList<Guest> Guests,
             DateOnly CheckInDate,
             DateOnly CheckOutDate,
             CancellationToken cancellationToken)
         {
-            var transactionPrice = new Money(Price.Amount, Price.Currency);
-
             var transactionEntity = TransactionRecordEntity.Create(
                 Guid.NewGuid(),
-                transactionPrice,
+                currency,
+                unitPrice,
+                numberOfUnits,
+                numberOfDays,
+                discount,
+                fee,
                 RoomId,
                 UserId,
-                Guests.ToList(),
+                [.. Guests],
                 CheckInDate,
                 CheckOutDate);
 

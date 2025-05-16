@@ -16,24 +16,16 @@ namespace RunAway.Application.Features.Transactions.Commands.CreateTransaction
         public required DateOnly CheckOutDate { get; set; }
     };
 
-    public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, Result<CreateTransactionResponseDto>>
+    public class CreateTransactionCommandHandler(
+        ITransactionService transactionService,
+        IRoomService roomService,
+        IAccommodationAvailabilityService accommodationAvailabilityService,
+        IUserService userService) : IRequestHandler<CreateTransactionCommand, Result<CreateTransactionResponseDto>>
     {
-        private readonly ITransactionService _transactionService;
-        private readonly IRoomService _roomService;
-        private readonly IAccommodationAvailabilityService _accommodationAvailabilityService;
-        private readonly IUserService _userService;
-
-        public CreateTransactionCommandHandler(
-            ITransactionService transactionService,
-            IRoomService roomService,
-            IAccommodationAvailabilityService accommodationAvailabilityService,
-            IUserService userService)
-        {
-            _transactionService = transactionService;
-            _roomService = roomService;
-            _accommodationAvailabilityService = accommodationAvailabilityService;
-            _userService = userService;
-        }
+        private readonly ITransactionService _transactionService = transactionService;
+        private readonly IRoomService _roomService = roomService;
+        private readonly IAccommodationAvailabilityService _accommodationAvailabilityService = accommodationAvailabilityService;
+        private readonly IUserService _userService = userService;
 
         public async Task<Result<CreateTransactionResponseDto>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
@@ -98,7 +90,12 @@ namespace RunAway.Application.Features.Transactions.Commands.CreateTransaction
             var transaction = await _transactionService.CreateTransactionAsync(
                 request.RoomID,
                 user.ID,
-                room.Price,
+                "USD", // TODO : should make it dynamic later
+                room.Price.Amount,
+                request.NumberOfRoom,
+                daysInRange,
+                0,// TODO : should make it dynamic later
+                0,// TODO : should make it dynamic later
                 request.Guests,
                 request.CheckInDate,
                 request.CheckOutDate,
@@ -124,7 +121,12 @@ namespace RunAway.Application.Features.Transactions.Commands.CreateTransaction
             {
                 TransactionID = transaction.ID,
                 RoomId = transaction.RoomID,
-                Price = transaction.Price,
+                UnitPrice = transaction.PriceBreakdown.UnitPrice,
+                Quantity = transaction.PriceBreakdown.Quantity,
+                NumberOfDays = transaction.PriceBreakdown.NumberOfDays,
+                Discount = transaction.PriceBreakdown.Discount,
+                Fee = transaction.PriceBreakdown.Fee,
+                TotalPrice = transaction.PriceBreakdown.TotalPrice,
                 Status = transaction.TransactionStatus,
             };
 

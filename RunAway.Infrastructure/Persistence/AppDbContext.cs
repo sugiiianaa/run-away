@@ -136,10 +136,20 @@ namespace RunAway.Infrastructure.Persistence
                 entity.Property(e => e.CheckInDate).HasColumnName("check_in_date");
                 entity.Property(e => e.CheckOutDate).HasColumnName("check_out_date");
 
-                entity.OwnsOne(e => e.Price, money =>
+                // Configure PriceBreakdown value object - UPDATED CONFIGURATION
+                entity.OwnsOne(e => e.PriceBreakdown, priceBreakdown =>
                 {
-                    money.Property(m => m.Amount).HasColumnName("amount");
-                    money.Property(m => m.Currency).HasColumnName("currency");
+                    priceBreakdown.Property(p => p.Currency).HasColumnName("currency");
+                    priceBreakdown.Property(p => p.UnitPrice).HasColumnName("unit_price")
+                        .HasColumnType("decimal(18,4)");
+                    priceBreakdown.Property(p => p.Quantity).HasColumnName("quantity");
+                    priceBreakdown.Property(p => p.NumberOfDays).HasColumnName("number_of_days");
+                    priceBreakdown.Property(p => p.Discount).HasColumnName("discount_amount")
+                        .HasColumnType("decimal(18,4)");
+                    priceBreakdown.Property(p => p.Fee).HasColumnName("fee_amount")
+                        .HasColumnType("decimal(18,4)");
+                    priceBreakdown.Property(p => p.TotalPrice).HasColumnName("total_amount")
+                        .HasColumnType("decimal(18,4)");
                 });
 
                 entity.HasOne(t => t.Room)
@@ -147,23 +157,18 @@ namespace RunAway.Infrastructure.Persistence
                     .HasForeignKey(t => t.RoomID)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.OwnsMany(p => p.Guests, a =>
-                 {
-                     a.ToTable("transaction_guests");
-                     a.WithOwner().HasForeignKey("transaction_record_id");
+                entity.OwnsMany(t => t.Guests, guestBuilder =>
+                {
+                    guestBuilder.ToTable("transaction_guests");
+                    guestBuilder.WithOwner().HasForeignKey("transaction_record_id");
+                    guestBuilder.Property<int>("id").ValueGeneratedOnAdd().HasColumnName("id");
+                    guestBuilder.HasKey("id").HasName("pk_transaction_guests");
 
-                     // Define the shadow property for the primary key
-                     a.Property<int>("id").ValueGeneratedOnAdd().HasColumnName("id");
+                    // Map actual properties from Guest class
+                    guestBuilder.Property(g => g.Type).HasColumnName("type");
+                    guestBuilder.Property(g => g.Number).HasColumnName("number");
+                });
 
-                     // Set it as the key
-                     a.HasKey("id").HasName("pk_transaction_guests");
-
-                     // Property column name configuration
-                     a.Property(e => e.Type).HasColumnName("type");
-                     a.Property(e => e.Number).HasColumnName("number");
-                     entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                     entity.Property(e => e.LastUpdatedAt).HasColumnName("last_updated_at");
-                 });
             });
 
             // Configure Room Available entity

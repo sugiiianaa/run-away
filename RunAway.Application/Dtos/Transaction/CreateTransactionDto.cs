@@ -18,7 +18,12 @@ namespace RunAway.Application.Dtos.Transaction
     {
         public Guid TransactionID { get; set; }
         public required Guid RoomId { get; set; }
-        public required Money Price { get; set; }
+        public required decimal UnitPrice { get; set; }
+        public required int Quantity { get; set; }
+        public required int NumberOfDays { get; set; }
+        public required decimal Discount { get; set; } = 0;
+        public required decimal Fee { get; set; } = 0;
+        public required decimal TotalPrice { get; set; }
         public required TransactionStatus Status { get; set; }
     }
 

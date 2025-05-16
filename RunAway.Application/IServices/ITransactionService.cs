@@ -9,10 +9,15 @@ namespace RunAway.Application.IServices
         public Task<TransactionRecordEntity> CreateTransactionAsync(
             Guid RoomId,
             Guid UserId,
-            Money Price,
+            string currency,
+            decimal unitPrice,
+            int numberOfUnits,
+            int numberOfDays,
+            decimal discount,
+            decimal fee,
             IList<Guest> Guests,
             DateOnly CheckInDate,
             DateOnly CheckOutDate,
-            CancellationToken cancellationToken = default);
+            CancellationToken cancellationToken);
     }
 }

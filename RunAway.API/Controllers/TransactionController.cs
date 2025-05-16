@@ -29,7 +29,6 @@ namespace RunAway.API.Controllers
                 return this.ToApiError<CreateTransactionResponseDto>(401, "User not authenticated properly");
             }
 
-
             var command = new CreateTransactionCommand
             {
                 RoomID = requestDTO.RoomID,
