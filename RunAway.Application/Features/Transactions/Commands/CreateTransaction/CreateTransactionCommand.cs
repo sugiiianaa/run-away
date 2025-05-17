@@ -29,7 +29,6 @@ namespace RunAway.Application.Features.Transactions.Commands.CreateTransaction
 
         public async Task<Result<CreateTransactionResponseDto>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-
             // Validate date range
             if (request.CheckInDate >= request.CheckOutDate)
             {

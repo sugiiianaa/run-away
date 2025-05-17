@@ -10,14 +10,9 @@ namespace RunAway.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccommodationAvailabilityController : ControllerBase
+    public class AccommodationAvailabilityController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AccommodationAvailabilityController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        private readonly IMediator _mediator = mediator;
 
         /// <summary>
         /// Add new room availability record

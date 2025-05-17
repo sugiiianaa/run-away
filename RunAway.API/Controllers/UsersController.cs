@@ -12,6 +12,8 @@ namespace RunAway.API.Controllers
     [Route("api/[controller]")]
     public class UsersController(IMediator mediator) : ControllerBase
     {
+        private readonly IMediator _mediator = mediator;
+
         /// <summary>
         /// Create new user entity
         /// POST: /api/Users/register
@@ -20,10 +22,12 @@ namespace RunAway.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<CreateUserResponseDto>>> Create([FromBody] CreateUserCommand command)
         {
-            var result = await mediator.Send(command);
+            var result = await _mediator.Send(command);
 
-            if (result == null)
-                return this.ToApiError<CreateUserResponseDto>(400, "User already registered.");
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<CreateUserResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
 
             return result.ToApiResponse(201, "User created successfully");
         }
@@ -36,10 +40,12 @@ namespace RunAway.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<LoginUserResponseDto>>> Login([FromBody] LoginUserQuery query)
         {
-            var result = await mediator.Send(query);
+            var result = await _mediator.Send(query);
 
-            if (result == null)
-                return this.ToApiError<LoginUserResponseDto>(400, "Input invalid");
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<LoginUserResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
 
             return result.ToApiResponse(200);
         }

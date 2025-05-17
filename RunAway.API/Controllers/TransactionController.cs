@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RunAway.API.Helpers;
 using RunAway.Application.Dtos.Transaction;
 using RunAway.Application.Features.Transactions.Commands.CreateTransaction;
+using RunAway.Application.Features.Transactions.Queries.GetTransaction;
 using RunAway.Infrastructure.Constants;
 
 namespace RunAway.API.Controllers
@@ -42,6 +43,36 @@ namespace RunAway.API.Controllers
             var result = await _mediator.Send(command);
 
             return result.ToApiResponse(201, "Transaction recorded successfully");
+        }
+
+        [HttpGet("get-transaction")]
+        [Authorize(Policy = UserAuthorizationPolicy.RequireUserRole)]
+        public async Task<ActionResult<ApiResponse<GetTransactionResponseDto>>> GetTransaction([FromQuery] GetTransactionRequestDto requestDTO)
+        {
+            // Get user email from JWT token
+            var userID = UserClaimsHelper.GetUserId(User);
+
+            if (userID == Guid.Empty || userID == null)
+            {
+                return this.ToApiError<GetTransactionResponseDto>(401, "User not authenticated properly");
+            }
+
+            var query = new GetTransactionQuery
+            {
+                BatchSize = requestDTO.BatchSize,
+                PageNumber = requestDTO.PageNumber,
+                TransactionStatus = requestDTO.TransactionStatus,
+                UserID = userID.Value
+            };
+
+            var result = await _mediator.Send(query);
+
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<GetTransactionResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
+
+            return result.ToApiResponse<GetTransactionResponseDto>(200);
         }
     }
 }

@@ -10,15 +10,9 @@ namespace RunAway.Application.Features.Accommodations.Queries.GetAccommodationDe
         public Guid Id { get; set; }
     }
 
-    public class GetAccommodationDetailsQueryHandler : IRequestHandler<GetAccommodationDetailsQuery, Result<GetAccomodationDetailResponseDto>>
+    public class GetAccommodationDetailsQueryHandler(IAccommodationService accommodationSerrvice) : IRequestHandler<GetAccommodationDetailsQuery, Result<GetAccomodationDetailResponseDto>>
     {
-
-        private readonly IAccommodationService _accommodationSerrvice;
-
-        public GetAccommodationDetailsQueryHandler(IAccommodationService accommodationSerrvice)
-        {
-            _accommodationSerrvice = accommodationSerrvice;
-        }
+        private readonly IAccommodationService _accommodationSerrvice = accommodationSerrvice;
 
         public async Task<Result<GetAccomodationDetailResponseDto>> Handle(GetAccommodationDetailsQuery request, CancellationToken cancellationToken)
         {

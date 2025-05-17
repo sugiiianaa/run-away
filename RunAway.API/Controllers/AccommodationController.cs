@@ -13,14 +13,9 @@ namespace RunAway.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccommodationController : ControllerBase
+    public class AccommodationController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AccommodationController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        private readonly IMediator _mediator = mediator;
 
         /// <summary>
         /// Add new accommodation entity
@@ -31,6 +26,11 @@ namespace RunAway.API.Controllers
         public async Task<ActionResult<ApiResponse<CreateAccommodationResponseDto>>> Create([FromBody] CreateAccommodationCommand command)
         {
             var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<CreateAccommodationResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
 
             return result.ToApiResponse(201, "Accommodation created successfully");
         }
@@ -63,8 +63,10 @@ namespace RunAway.API.Controllers
         {
             var result = await _mediator.Send(new GetAccommodationDetailsQuery { Id = id });
 
-            if (result == null)
+            if (!result.IsSuccess)
+            {
                 return this.ToApiError<GetAccomodationDetailResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
 
             return result.ToApiResponse(200);
         }

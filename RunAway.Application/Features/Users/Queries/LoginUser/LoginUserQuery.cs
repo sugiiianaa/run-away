@@ -11,21 +11,14 @@ namespace RunAway.Application.Features.Users.Queries.LoginUser
         public required string Password { get; set; }
     }
 
-    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, Result<LoginUserResponseDto>>
+    public class LoginUserQueryHandler(
+        IUserService userService,
+        IPasswordService passwordService,
+        IAuthService authService) : IRequestHandler<LoginUserQuery, Result<LoginUserResponseDto>>
     {
-        private readonly IUserService _userService;
-        private readonly IPasswordService _passwordService;
-        private readonly IAuthService _authService;
-
-        public LoginUserQueryHandler(
-            IUserService userService,
-            IPasswordService passwordService,
-            IAuthService authService)
-        {
-            _userService = userService;
-            _passwordService = passwordService;
-            _authService = authService;
-        }
+        private readonly IUserService _userService = userService;
+        private readonly IPasswordService _passwordService = passwordService;
+        private readonly IAuthService _authService = authService;
 
         public async Task<Result<LoginUserResponseDto>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
@@ -41,7 +34,6 @@ namespace RunAway.Application.Features.Users.Queries.LoginUser
             {
                 return Result<LoginUserResponseDto>.Failure("Username or password is invalid", 400, ErrorCode.InvalidOperation);
             }
-
 
             var (token, expiresAt) = _authService.GenerateToken(user.ID, user.Email, user.Role);
 

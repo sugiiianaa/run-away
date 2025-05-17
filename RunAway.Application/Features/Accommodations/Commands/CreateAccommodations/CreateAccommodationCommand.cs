@@ -17,18 +17,12 @@ namespace RunAway.Application.Features.Accommodations.Commands.CreateAccommodati
         public required List<CreateAccommodationRoomRequestDto> Rooms { get; set; }
     }
 
-    public class CreateAccommodationCommandHandler : IRequestHandler<CreateAccommodationCommand, Result<CreateAccommodationResponseDto>>
+    public class CreateAccommodationCommandHandler(
+        ILogger<CreateAccommodationCommandHandler> logger,
+        IAccommodationService accommodationService) : IRequestHandler<CreateAccommodationCommand, Result<CreateAccommodationResponseDto>>
     {
-        private readonly ILogger<CreateAccommodationCommandHandler> _logger;
-        private readonly IAccommodationService _accommodationService;
-
-        public CreateAccommodationCommandHandler(
-            ILogger<CreateAccommodationCommandHandler> logger,
-            IAccommodationService accommodationService)
-        {
-            _logger = logger;
-            _accommodationService = accommodationService;
-        }
+        private readonly ILogger<CreateAccommodationCommandHandler> _logger = logger;
+        private readonly IAccommodationService _accommodationService = accommodationService;
 
         public async Task<Result<CreateAccommodationResponseDto>> Handle(CreateAccommodationCommand request, CancellationToken cancellationToken)
         {

@@ -5,7 +5,6 @@ namespace RunAway.Application.IServices
 {
     public interface ITransactionService
     {
-        // should add check availability service later
         public Task<TransactionRecordEntity> CreateTransactionAsync(
             Guid RoomId,
             Guid UserId,
@@ -19,5 +18,15 @@ namespace RunAway.Application.IServices
             DateOnly CheckInDate,
             DateOnly CheckOutDate,
             CancellationToken cancellationToken);
+
+        public Task<IList<TransactionRecordEntity>> GetTransactionAsync(
+            Guid userId,
+            int transactionStatus,
+            int pageNumber,
+            int batchSize);
+
+        public Task<int> GetTransactionCountAsync(
+            Guid userId,
+            int transactionStatus);
     }
 }

@@ -50,6 +50,20 @@ namespace RunAway.Infrastructure.Services
 
             return transactionEntity;
         }
+
+        public async Task<IList<TransactionRecordEntity>> GetTransactionAsync(
+            Guid userId,
+            int transactionStatus,
+            int pageNumber,
+            int batchSize)
+        {
+            return await _transactionRepository.GetAsync(batchSize, pageNumber, transactionStatus, userId);
+        }
+
+        public async Task<int> GetTransactionCountAsync(Guid userId, int transactionStatus)
+        {
+            return await _transactionRepository.GetTotalCountAsync(transactionStatus, userId);
+        }
     }
 }
 

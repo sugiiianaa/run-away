@@ -8,18 +8,12 @@ using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Infrastructure.Services
 {
-    public class AccommodationService : IAccommodationService
+    public class AccommodationService(
+        IAccommodationRepository accommodationRepository,
+        IUnitOfWork unitOfWork) : IAccommodationService
     {
-        private readonly IAccommodationRepository _accommodationRepository;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public AccommodationService(
-            IAccommodationRepository accommodationRepository,
-            IUnitOfWork unitOfWork)
-        {
-            _accommodationRepository = accommodationRepository;
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IAccommodationRepository _accommodationRepository = accommodationRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<Result<AccommodationEntity>> CreateAccommodationAsync(
             CreateAccommodationCommand command,
@@ -52,6 +46,7 @@ namespace RunAway.Infrastructure.Services
         public async Task<Result<AccommodationEntity>> GetAccommodationDetailAsync(Guid accommodationId, CancellationToken cancellationToken)
         {
             var accommodation = await _accommodationRepository.GetByIdWithRoomsAsync(accommodationId);
+
             if (accommodation == null)
             {
                 return Result<AccommodationEntity>.Failure("Accommodation not found", 404, ErrorCode.InvalidArgument);
