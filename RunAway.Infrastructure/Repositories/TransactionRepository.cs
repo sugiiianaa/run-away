@@ -38,6 +38,11 @@ namespace RunAway.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<TransactionRecordEntity?> GetByIDAsync(Guid transactionID, CancellationToken cancellationToken)
+        {
+            return await _context.Transactions.FirstOrDefaultAsync(t => t.ID == transactionID, cancellationToken);
+        }
+
         public async Task<int> GetTotalCountAsync(int transactionStatus, Guid userID)
         {
             var query = _context.Transactions.Where(t => t.UserID == userID);
@@ -54,5 +59,14 @@ namespace RunAway.Infrastructure.Repositories
             return await query.CountAsync();
         }
 
+        public void UpdateTransactionStatusAsync(TransactionRecordEntity transactionRecord, TransactionStatus newStatus)
+        {
+            // Upda te the status
+            transactionRecord.UpdateTransactionStatus(newStatus);
+
+            // If your DbContext is tracking the entity, you only need to update and save
+            _context.Transactions.Update(transactionRecord);
+
+        }
     }
 }

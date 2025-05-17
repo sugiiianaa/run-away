@@ -1,4 +1,5 @@
 ﻿using RunAway.Domain.Entities;
+using RunAway.Domain.Enums;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Application.IServices
@@ -28,5 +29,10 @@ namespace RunAway.Application.IServices
         public Task<int> GetTransactionCountAsync(
             Guid userId,
             int transactionStatus);
+
+        public Task<TransactionRecordEntity> GetTransactionByIDAsync(
+            Guid TransactionID);
+
+        public Task UpdateTransactionStatusAsync(TransactionRecordEntity transaction, TransactionStatus newStatus);
     }
 }

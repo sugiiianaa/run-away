@@ -2,6 +2,7 @@
 using RunAway.Application.IServices;
 using RunAway.Domain.Commons;
 using RunAway.Domain.Entities;
+using RunAway.Domain.Enums;
 using RunAway.Domain.ValueObjects;
 
 namespace RunAway.Infrastructure.Services
@@ -60,9 +61,20 @@ namespace RunAway.Infrastructure.Services
             return await _transactionRepository.GetAsync(batchSize, pageNumber, transactionStatus, userId);
         }
 
+        public async Task<TransactionRecordEntity> GetTransactionByIDAsync(Guid TransactionID)
+        {
+            return await _transactionRepository.GetByIDAsync(TransactionID);
+        }
+
         public async Task<int> GetTransactionCountAsync(Guid userId, int transactionStatus)
         {
             return await _transactionRepository.GetTotalCountAsync(transactionStatus, userId);
+        }
+
+        public async Task UpdateTransactionStatusAsync(TransactionRecordEntity transaction, TransactionStatus newStatus)
+        {
+            _transactionRepository.UpdateTransactionStatusAsync(transaction, newStatus);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

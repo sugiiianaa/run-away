@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RunAway.API.Helpers;
 using RunAway.Application.Dtos.Transaction;
 using RunAway.Application.Features.Transactions.Commands.CreateTransaction;
+using RunAway.Application.Features.Transactions.Commands.UpdateTransaction;
 using RunAway.Application.Features.Transactions.Queries.GetTransaction;
 using RunAway.Infrastructure.Constants;
 
@@ -45,6 +46,12 @@ namespace RunAway.API.Controllers
             return result.ToApiResponse(201, "Transaction recorded successfully");
         }
 
+        /// <summary>
+        /// Get user transaction
+        /// GET: /api/Transaction/get-transaction?PageNumber={int}&BatchSize={int}
+        /// </summary>
+        /// <param name="requestDTO"></param>
+        /// <returns></returns>
         [HttpGet("get-transaction")]
         [Authorize(Policy = UserAuthorizationPolicy.RequireUserRole)]
         public async Task<ActionResult<ApiResponse<GetTransactionResponseDto>>> GetTransaction([FromQuery] GetTransactionRequestDto requestDTO)
@@ -73,6 +80,32 @@ namespace RunAway.API.Controllers
             }
 
             return result.ToApiResponse<GetTransactionResponseDto>(200);
+        }
+
+
+        /// <summary>
+        /// Update user transaction manually (admin & super user only)
+        /// PUT: /api/Transaction/update-transaction
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("update-transaction")]
+        [Authorize(Policy = UserAuthorizationPolicy.RequireAdminRole)]
+        public async Task<ActionResult<ApiResponse<UpdateTransactionResponseDto>>> UpdateTransaction([FromBody] UpdateTransactionRequestDto requestDTO)
+        {
+            var command = new UpdateTransactionCommand
+            {
+                TransactionID = requestDTO.TransactionID,
+                TransactionStatus = requestDTO.TransactionStatus
+            };
+
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+            {
+                return this.ToApiError<UpdateTransactionResponseDto>(result.ApiResponseErrorCode, result.ErrorMessage);
+            }
+
+            return result.ToApiResponse<UpdateTransactionResponseDto>(201);
         }
     }
 }
